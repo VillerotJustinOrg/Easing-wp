@@ -1,0 +1,4 @@
+# DB password
+/easing/wp-config.php
+.idea/
+/dev/Site/.env

@@ -1,0 +1,378 @@
+p {
+  margin: 0;
+}
+
+.bold {
+  font-weight: 700;
+}
+
+.overflow-none {
+  overflow-y: hidden;
+}
+
+* {
+  font-family: "Montserrat", sans-serif;
+}
+
+body {
+  position: relative;
+  overflow-x: hidden;
+}
+
+header {
+  width: 100%;
+  background-color: #6300FF;
+  height: 55px;
+}
+header a {
+  color: white;
+}
+header .all_links a {
+  margin-left: 30px;
+}
+
+.owl-carousel {
+  position: relative;
+}
+.owl-carousel .owl-dots {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.owl-carousel .owl-dots .owl-dot.active span {
+  background-color: white;
+}
+.owl-carousel .owl-dots .owl-dot span {
+  margin: 5px 3px;
+}
+
+.accueil_form .champ {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.accueil_form .champ input {
+  border-radius: 25px;
+  padding: 5px;
+  padding-left: 15px;
+}
+.accueil_form .envoyer {
+  height: 40px;
+  width: 40px;
+  border-radius: 20px;
+  border: none;
+  background-color: #6300FF;
+}
+
+.card_logement {
+  width: 24%;
+  display: block;
+  text-decoration: none !important;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+.card_logement .ville {
+  font-weight: 700;
+}
+.card_logement .prix {
+  margin-top: 10px;
+}
+.card_logement .coeur {
+  transition: all 0.3s ease-in-out;
+  width: 21px;
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  height: 20px;
+  background-size: contain;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-image: url("img/coeur.svg");
+}
+.card_logement .coeur.rouge {
+  background-image: url("img/coeur-rouge.svg") !important;
+}
+.card_logement .informations {
+  transition: all 0.3s ease-in-out;
+  background-color: #251B38;
+  position: relative;
+  padding: 20px;
+  border-radius: 25px;
+  margin-top: 15px;
+  color: white;
+}
+.card_logement:hover .carousel-logement {
+  box-shadow: 3px 2px 8px 1px rgba(0, 0, 0, 0.3);
+}
+.card_logement:hover .carousel-logement .owl-nav {
+  display: flex !important;
+}
+.card_logement:hover .informations {
+  box-shadow: 3px 2px 8px 1px rgba(0, 0, 0, 0.3);
+}
+
+.liste-logements {
+  width: 60%;
+  max-height: 100%;
+  overflow-y: scroll;
+  flex-flow: row wrap;
+  gap: 2%;
+  padding-right: 25px;
+  padding-left: 25px;
+  padding-bottom: 25px;
+}
+
+.marker-map {
+  transition: all 0.2s ease-in-out;
+}
+
+.carousel-logement {
+  border-radius: 25px;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+}
+.carousel-logement img {
+  height: 260px;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+}
+.leaflet-popup-content img {
+  width: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  min-width: 230px;
+  height: 140px;
+}
+
+.leaflet-popup-content-wrapper {
+  padding: 0;
+  overflow: hidden;
+}
+
+.leaflet-container {
+  min-width: 200px;
+}
+.leaflet-container a {
+  height: 100%;
+  display: block;
+  text-decoration: none;
+  color: #251B38;
+  font-size: 16px;
+}
+.leaflet-container a .text-pop {
+  padding: 10px;
+}
+
+.owl-theme .owl-nav {
+  display: none;
+  position: absolute;
+  width: 100%;
+  flex-direction: row;
+  justify-content: space-between;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.owl-theme .owl-nav .owl-prev {
+  background-color: white !important;
+  box-shadow: 3px 2px 8px 1px rgba(0, 0, 0, 0.3);
+  font-size: 26px;
+  width: 20px;
+  height: 20px;
+}
+.owl-theme .owl-nav .owl-prev span {
+  margin-top: -3px;
+  display: block;
+  color: #251B38;
+}
+.owl-theme .owl-nav .owl-next {
+  background-color: white !important;
+  box-shadow: 3px 2px 8px 1px rgba(0, 0, 0, 0.3);
+  font-size: 26px;
+  width: 20px;
+  height: 20px;
+}
+.owl-theme .owl-nav .owl-next span {
+  margin-top: -3px;
+  display: block;
+  color: #251B38;
+}
+
+.one-commentaire {
+  width: 48%;
+  margin-bottom: 50px;
+}
+.one-commentaire .photo {
+  margin-bottom: 30px;
+}
+.one-commentaire .photo img {
+  width: 80px;
+  height: 80px;
+  border-radius: 40px;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+.one-commentaire .photo .nom {
+  margin-left: 20px;
+}
+
+#singleLogement h1 {
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+#singleLogement h2 {
+  margin-bottom: 25px;
+  margin-top: 25px;
+}
+#singleLogement .line {
+  width: 100%;
+  height: 1px;
+  background-color: black;
+  margin-top: 30px;
+}
+#singleLogement .grand_line {
+  height: 1px;
+  background-color: black;
+  width: 100%;
+  margin-top: 30px;
+}
+#singleLogement .wrapper {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-gap: 10px;
+  grid-auto-rows: minmax(100px, auto);
+}
+#singleLogement .case-1 {
+  grid-column: 1/4;
+  grid-row: 1/3;
+}
+#singleLogement .case-2 {
+  grid-column: 4/10;
+  grid-row: 1/5;
+}
+#singleLogement .case-3 {
+  grid-column: 10/13;
+  grid-row: 1/7;
+  position: relative;
+}
+#singleLogement .case-3:before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgba(37, 27, 56, 0.7);
+  opacity: 1;
+  width: 100%;
+  height: 100%;
+  content: "";
+}
+#singleLogement .case-3 .img-360 {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+#singleLogement .case-4 {
+  grid-column: 1/4;
+  grid-row: 3/5;
+}
+#singleLogement .case-5 {
+  grid-column: 1/4;
+  grid-row: 5/7;
+}
+#singleLogement .case-6 {
+  grid-column: 4/7;
+  grid-row: 5/7;
+}
+#singleLogement .case-7 {
+  grid-column: 7/10;
+  grid-row: 5/7;
+}
+
+.filtre-popup {
+  display: none;
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  background-color: rgba(0, 0, 0, 0.5);
+  overflow-x: none;
+}
+.filtre-popup .pop-pup-content {
+  width: 50%;
+  position: relative;
+  height: 50%;
+  background-color: white;
+  border-radius: 25px;
+  padding: 10px 30px 10px 30px;
+}
+.filtre-popup h3 {
+  text-align: center;
+  padding-top: 20px;
+}
+.filtre-popup .croix_filtre {
+  transform: rotate(136deg);
+  font-size: 40px;
+  width: -moz-fit-content;
+  width: fit-content;
+  z-index: 10;
+  position: absolute;
+  top: 5px;
+  left: 5px;
+}
+.filtre-popup .croix_filtre:hover {
+  cursor: pointer;
+}
+
+.pop-reserver {
+  color: white;
+  background-color: #251B38;
+  padding: 30px;
+  border-radius: 25px;
+  box-shadow: 3px 2px 8px 1px rgba(0, 0, 0, 0.3);
+  border: 1px solid black;
+  width: 30%;
+  height: -moz-fit-content;
+  height: fit-content;
+  position: sticky;
+  top: 40px;
+}
+.pop-reserver .button {
+  color: #6300FF;
+  background-color: #F1EAFF;
+  width: 100%;
+  display: block;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  text-align: center;
+  border-radius: 20px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.tag {
+  background-color: white;
+  margin-left: 5px;
+  margin-right: 5px;
+  box-shadow: 3px 2px 8px 1px rgba(0, 0, 0, 0.3);
+  padding: 5px 15px 5px 15px;
+  border-radius: 8px;
+  width: -moz-fit-content;
+  width: fit-content;
+}
+.tag:hover {
+  cursor: pointer;
+}
+
+.tag-select {
+  color: white !important;
+  background-color: #6300FF !important;
+}
+
+.champ_filtre:hover {
+  cursor: pointer;
+}/*# sourceMappingURL=style.css.map */

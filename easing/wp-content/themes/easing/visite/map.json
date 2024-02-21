@@ -1,0 +1,330 @@
+{
+    "coord": {
+        "BathroomUp": {
+            "x": 0,
+            "y": 0
+        },
+        "Big Bathroom": {
+            "x": 0,
+            "y": 0
+        },
+        "Entrance": {
+            "x": 648,
+            "y": 469
+        },
+        "Entrance2": {
+            "x": 458,
+            "y": 435
+        },
+        "Entrance4": {
+            "x": 664,
+            "y": 352
+        },
+        "Entrance5": {
+            "x": 0,
+            "y": 0
+        },
+        "GS__0007": {
+            "x": 460,
+            "y": 435
+        },
+        "GS__0019": {
+            "x": 0,
+            "y": 0
+        },
+        "Garden1": {
+            "x": 0,
+            "y": 0
+        },
+        "Garden2": {
+            "x": 0,
+            "y": 0
+        },
+        "Garden3": {
+            "x": 0,
+            "y": 0
+        },
+        "Garden4": {
+            "x": 0,
+            "y": 0
+        },
+        "Kitchen1": {
+            "x": 778,
+            "y": 344
+        },
+        "Outside1": {
+            "x": 0,
+            "y": 0
+        },
+        "Outside2": {
+            "x": 0,
+            "y": 0
+        },
+        "Room1": {
+            "x": 0,
+            "y": 0
+        },
+        "Room2": {
+            "x": 0,
+            "y": 0
+        },
+        "Room3": {
+            "x": 0,
+            "y": 0
+        },
+        "Room4": {
+            "x": 0,
+            "y": 0
+        },
+        "Salon1": {
+            "x": 311,
+            "y": 435
+        },
+        "Salon2": {
+            "x": 315,
+            "y": 254
+        },
+        "Salon3": {
+            "x": 308,
+            "y": 583
+        },
+        "Upstairs1": {
+            "x": 0,
+            "y": 0
+        },
+        "Upstairs2": {
+            "x": 0,
+            "y": 0
+        },
+        "Upstairs3": {
+            "x": 0,
+            "y": 0
+        },
+        "Upstairs4": {
+            "x": 0,
+            "y": 0
+        },
+        "kitchen2": {
+            "x": 779,
+            "y": 455
+        }
+    },
+    "default": {
+        "lang": "fr",
+        "loc": "",
+        "locnum": "0"
+    },
+    "lang": {
+        "en": {
+            "area": [
+            ],
+            "loc": {
+                "BathroomUp": {
+                    "name": "GS__0025"
+                },
+                "Big Bathroom": {
+                    "name": "GS__0022"
+                },
+                "Entrance": {
+                    "name": "Entrance1"
+                },
+                "Entrance2": {
+                    "name": "Entrance2"
+                },
+                "Entrance4": {
+                    "name": "GS__0014"
+                },
+                "Entrance5": {
+                    "name": "GS__0015"
+                },
+                "GS__0007": {
+                    "name": "GS__0007"
+                },
+                "GS__0019": {
+                    "name": "GS__0019"
+                },
+                "Garden1": {
+                    "name": "GS__0032"
+                },
+                "Garden2": {
+                    "name": "GS__0033"
+                },
+                "Garden3": {
+                    "name": "GS__0034"
+                },
+                "Garden4": {
+                    "name": "GS__0035"
+                },
+                "Kitchen1": {
+                    "name": "GS__0009"
+                },
+                "Outside1": {
+                    "name": "GS__0028"
+                },
+                "Outside2": {
+                    "name": "GS__0031"
+                },
+                "Room1": {
+                    "name": "GS__0020"
+                },
+                "Room2": {
+                    "name": "GS__0021"
+                },
+                "Room3": {
+                    "name": "GS__0023"
+                },
+                "Room4": {
+                    "name": "GS__0026"
+                },
+                "Salon1": {
+                    "name": "GS__0011"
+                },
+                "Salon2": {
+                    "name": "GS__0012"
+                },
+                "Salon3": {
+                    "name": "GS__0013"
+                },
+                "Upstairs1": {
+                    "name": "Upstairs1"
+                },
+                "Upstairs2": {
+                    "name": "Upstairs2"
+                },
+                "Upstairs3": {
+                    "name": "GS__0018"
+                },
+                "Upstairs4": {
+                    "name": "GS__0024"
+                },
+                "kitchen2": {
+                    "name": "GS__0010"
+                }
+            },
+            "pos": [
+                "Your position :"
+            ]
+        },
+        "fr": {
+            "area": [
+            ],
+            "loc": {
+                "BathroomUp": {
+                    "name": "GS__0025"
+                },
+                "Big Bathroom": {
+                    "name": "GS__0022"
+                },
+                "Entrance": {
+                    "name": "Entrée1"
+                },
+                "Entrance2": {
+                    "name": "GS__0008"
+                },
+                "Entrance4": {
+                    "name": "GS__0014"
+                },
+                "Entrance5": {
+                    "name": "GS__0015"
+                },
+                "GS__0007": {
+                    "name": "GS__0007"
+                },
+                "GS__0019": {
+                    "name": "GS__0019"
+                },
+                "Garden1": {
+                    "name": "GS__0032"
+                },
+                "Garden2": {
+                    "name": "GS__0033"
+                },
+                "Garden3": {
+                    "name": "GS__0034"
+                },
+                "Garden4": {
+                    "name": "GS__0035"
+                },
+                "Kitchen1": {
+                    "name": "GS__0009"
+                },
+                "Outside1": {
+                    "name": "GS__0028"
+                },
+                "Outside2": {
+                    "name": "GS__0031"
+                },
+                "Room1": {
+                    "name": "GS__0020"
+                },
+                "Room2": {
+                    "name": "GS__0021"
+                },
+                "Room3": {
+                    "name": "GS__0023"
+                },
+                "Room4": {
+                    "name": "GS__0026"
+                },
+                "Salon1": {
+                    "name": "GS__0011"
+                },
+                "Salon2": {
+                    "name": "GS__0012"
+                },
+                "Salon3": {
+                    "name": "GS__0013"
+                },
+                "Upstairs1": {
+                    "name": "GS__0016"
+                },
+                "Upstairs2": {
+                    "name": "GS__0017"
+                },
+                "Upstairs3": {
+                    "name": "GS__0018"
+                },
+                "Upstairs4": {
+                    "name": "GS__0024"
+                },
+                "kitchen2": {
+                    "name": "GS__0010"
+                }
+            },
+            "pos": [
+                "Votre position :"
+            ]
+        }
+    },
+    "legend": {
+    },
+    "num": {
+        "0": "Entrance",
+        "1": "GS__0007",
+        "10": "Upstairs1",
+        "11": "Upstairs2",
+        "12": "Upstairs3",
+        "13": "GS__0019",
+        "14": "Room1",
+        "15": "Room2",
+        "16": "Big Bathroom",
+        "17": "Room3",
+        "18": "Upstairs4",
+        "19": "BathroomUp",
+        "2": "Entrance2",
+        "20": "Room4",
+        "21": "Outside1",
+        "22": "Outside2",
+        "23": "Garden1",
+        "24": "Garden2",
+        "25": "Garden3",
+        "26": "Garden4",
+        "3": "Kitchen1",
+        "4": "kitchen2",
+        "5": "Salon1",
+        "6": "Salon2",
+        "7": "Salon3",
+        "8": "Entrance4",
+        "9": "Entrance5"
+    }
+}
