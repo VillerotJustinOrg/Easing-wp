@@ -31,9 +31,9 @@ function Router_Service_Type_Piece($post, $post_id, $label, $token_access): void
         create_Service_Type_Piece($post, $post_id, $label, $token_access, $fields);
     }
     else {
-        if ($Post_Status != "trash"){
+        if ($Post_Status == "publish"){
             update_Service_Type_Piece($node_ID, $post_id, $token_access);
-        } elseif ($Post_Status == "publish") {
+        } elseif ($Post_Status == "trash") {
             delete_Service_Type_Piece($node_ID, $token_access);
         } else {
             // If you want to do something on draft

@@ -93,7 +93,7 @@ function add_field_info_to_body($body, $fields)
 }
 
 
-function update_relationship_between_node($node1, $node2, $relationship_type, $token_access): void
+function update_relationship_between_node($source_node, $target_nodes, $relationship_type, $token_access): void
 {
     error_log("=====================================");
     error_log('Update Relationship Between Two Node');
@@ -102,7 +102,45 @@ function update_relationship_between_node($node1, $node2, $relationship_type, $t
 
     // Check  if there is already a relationship between this logement and this propriétaire
 
-    $Prop_URL = "/graph/read_relationship_btwn_node/?node_id1=".$node1['ID']."&node_id2=".$node2['ID'];
+    $relationship_to_keep = array();
+
+    foreach ($target_nodes as $target_node){
+
+        error_log("target node: ".print_r($target_node, true));
+        error_log("check_relationship_between_node");
+        $relationship_between_node = check_relationship_between_node($source_node['ID'], $target_node['ID'], $token_access);
+
+        if ($relationship_between_node == -1) {
+            // Creation of relationship
+
+            error_log("create_relationship_between_node");
+            $relationship_id = create_relationship_between_node(
+                $source_node['Label'],
+                $source_node['ID'],
+                $target_node['Label'],
+                $target_node['ID'],
+                $relationship_type,
+                $token_access
+            );
+
+            $relationship_to_keep[] = $relationship_id;
+
+        } else {
+            $relationship_to_keep[] = $relationship_between_node;
+        }
+    }
+
+    // Removing all old relationship.
+    error_log("delete_old_relationships");
+    delete_old_relationships($source_node['ID'], $relationship_type, $relationship_to_keep, $token_access);
+
+}
+
+function check_relationship_between_node($node1_ID, $node2_ID, $token_access):int
+{
+    error_log($node1_ID);
+    error_log($node2_ID);
+    $Prop_URL = "/graph/read_relationship_btwn_node/?node_id1=$node1_ID&node_id2=$node2_ID";
 
     $Prop_header = array(
         'Accept' => 'application/json',
@@ -119,77 +157,135 @@ function update_relationship_between_node($node1, $node2, $relationship_type, $t
         error_log("Error");
     }
 
-//    error_log("result: ".$response["body"]);
+    $result = json_decode($response['body'], true);
 
-    $relationship_to_keep = null;
+    error_log(print_r($result, true));
 
-    if ($response["body"] == -1) {
-        // Creation of relationship
-
-        $source_node = array(
-            'label'=>$node1['Label'],
-            'id'=>$node1['ID']
-        );
-
-        $target_node = array(
-            'label'=>$node2['Label'],
-            'id'=>$node2['ID']
-        );
-
-        $body = array(
-            'relationship_type'=>$relationship_type,
-            'relationship_attributes'=>array(),
-            'source_node'=>$source_node,
-            'target_node'=>$target_node
-        );
-
-        $encoded_body = json_encode($body);
-
-        $header = array(
-            'Content-Type'=>'application/json',
-            'Accept' => 'application/json',
-            'Authorization' => 'bearer '.$token_access
-        );
-
-        $args = array(
-            'headers' => $header,
-            'body' => $encoded_body,
-            'method' => 'POST'
-        );
-
-        $Create_URL = "/graph/create_relationship";
-
-        $create_response = wp_remote_request($GLOBALS['API_URL'].$Create_URL, $args);
-
-        if( is_wp_error( $create_response ) ) {
-            error_log("Error");
-        }
-
-//        error_log("result: ".print_r($create_response, true));
-
-        $data = json_decode($create_response["body"], true);
-        $relationship_to_keep = $data["relationship_id"];
+    if ($result == -1) {
+        return $result;
+    } else {
+        return $result['relationship_id'];
     }
+}
 
-    // Removing all old relationship.
+function create_relationship_between_node(
+    $source_node_label, $source_node_label_id,
+    $target_node_label, $target_node_label_id,
+    $relationship_type, $token_access):int
+{
 
-    $cypher ="MATCH (startNode)-[r:$relationship_type]->() WHERE id(startNode) = ".$node1['ID']." AND id(r) <> $relationship_to_keep DELETE r";
+    $source_node = array(
+        'label'=>$source_node_label,
+        'id'=>$source_node_label_id
+    );
+
+    $target_node = array(
+        'label'=>$target_node_label,
+        'id'=>$target_node_label_id
+    );
+
+    $body = array(
+        'relationship_type'=>$relationship_type,
+        'relationship_attributes'=>array(),
+        'source_node'=>$source_node,
+        'target_node'=>$target_node
+    );
+
+    $encoded_body = json_encode($body);
+
     $header = array(
         'Content-Type'=>'application/json',
         'Accept' => 'application/json',
         'Authorization' => 'bearer '.$token_access
     );
+
     $args = array(
         'headers' => $header,
-        'body' => json_encode(array("cypher_string"=>$cypher)),
+        'body' => $encoded_body,
         'method' => 'POST'
     );
-    $result = wp_remote_request($GLOBALS['API_URL'].'/q', $args);
 
+    $Create_URL = "/graph/create_relationship";
+
+    $create_response = wp_remote_request($GLOBALS['API_URL'].$Create_URL, $args);
+
+    if( is_wp_error( $create_response ) ) {
+        error_log("Error");
+    }
+
+//        error_log("result: ".print_r($create_response, true));
+
+    $data = json_decode($create_response["body"], true);
+//    error_log("data: ".print_r($data, true));
+    return $data["relationship_id"];
+}
+
+function delete_old_relationships($node_id, $relationship_type, $relationship_to_keep, $token_access):void
+{
+    // Get All relationship linked to given node with given relationship type
+    $cypher_string = "MATCH (n)-[r:$relationship_type]-(m) WHERE ID(n) = $node_id RETURN ID(r) AS ID";
+
+    $body = array(
+        "cypher_string"=>$cypher_string
+    );
+
+    $header = array(
+        'Content-Type'=>'application/json',
+        'Accept' => 'application/json',
+        'Authorization' => 'bearer '.$token_access
+    );
+
+    $args = array(
+        'headers' => $header,
+        'body' => json_encode($body),
+        'method' => 'POST'
+    );
+
+    $response = wp_remote_request($GLOBALS['API_URL'].'/q', $args);
+
+    if( is_wp_error( $response ) ) {
+        error_log("Error: Get All relationship linked to given node with given relationship type");
+    }
+
+    $ids = json_decode($response['body'], true)['response'];
+
+    error_log("All relationship linked to given node with given relationship type: ".print_r($ids, true));
+
+    // Transform info in two list of ID
+
+    $relationship_ids = array();
+    foreach ($ids as $id) {
+        $relationship_ids[] = $id['ID'];
+    }
+
+    error_log('relationship_ids: '.print_r($relationship_ids, true));
+    error_log('To keep: '.print_r($relationship_to_keep, true));
+    $relationship_to_delete = array_diff($relationship_ids, $relationship_to_keep);
+    error_log('To delete: '.print_r($relationship_to_delete, true));
+
+    foreach ($relationship_to_delete as $id) {
+        delete_relationship($id, $token_access);
+    }
 
 }
 
-function check_relationship between_node()
+function delete_relationship($relationship_id, $token_access)
 {
-    
+    $DELETE_URL = "/graph/delete_relationship/$relationship_id";
+
+    $header = array(
+        'Content-Type'=>'application/json',
+        'Accept' => 'application/json',
+        'Authorization' => 'bearer '.$token_access
+    );
+
+    $args = array(
+        'headers' => $header,
+    );
+
+    $response = wp_remote_post($GLOBALS['API_URL'].$DELETE_URL, $args);
+
+    if( is_wp_error( $response ) ) {
+        error_log("Error delete relationship");
+    }
 }

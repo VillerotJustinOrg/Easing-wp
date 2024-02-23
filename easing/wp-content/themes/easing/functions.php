@@ -16,14 +16,14 @@ require_once "Code_API/Type_propriete.php";
 
 
 // =======================================================================
-//                      Set Interruption ACF Edition
+//                              Set Hooks
 // =======================================================================
 
 // Creating & Deleting
 add_action('save_post', 'send_data_to_api_on_post_save', 10, 3);
 
-// Delete
-add_action('handle_acf_delete', 'send_data_to_api_on_post_delete', 10, 3);
+// Hook into the pre_get_posts action
+add_action('pre_get_posts', 'custom_modify_query_args');
 
 // =======================================================================
 //                              Fonctions
@@ -90,3 +90,13 @@ function send_data_to_api_on_post_save($post_id, $post, $update): void {
     error_log("==================================================================================");
 }
 
+// Define a custom function to modify the query arguments
+function custom_modify_query_args($query): void
+{
+//    // Check if this is the main query and if we're on a specific page
+//    if (is_admin() || !$query->is_main_query() || !is_page('liste-logements')) {
+//        return;
+//    }
+
+    error_log(print_r($query, true));
+}

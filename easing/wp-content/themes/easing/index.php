@@ -13,6 +13,10 @@ $filtered_terms = wp_list_filter($terms, array('count' => 0), 'NOT'); ?>
 
 <main class="container">
 
+    <form action="http://localhost/easing/wp-content/themes/easing/Test.php" method="post">
+        <button type="submit">Test</button>
+    </form>
+
     <form style="margin-top:30px;margin-bottom:30px" class="accueil_form d-flex align-items-end justify-content-center flex-row" action="<?php echo esc_url(get_permalink(27)); ?>" method="post" style="margin-bottom:50px">
 
         <!-- Champ nombre -->

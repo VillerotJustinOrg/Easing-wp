@@ -90,13 +90,13 @@ if (empty($nombre) && empty($destination)) {
         ),
     );
 }
-
+error_log("Get post filters");
 $logements = get_posts($args);
 $list_logements = array();
 
 foreach ($logements as $logement) {
 
-$fields_logement = get_fields($logement->ID); 
+$fields_logement = get_fields($logement->ID);
 $fields_logement['link'] = get_permalink($logement->ID); // Ajoute le lien du logement au tableau
 array_push($list_logements, $fields_logement);
 

@@ -212,7 +212,7 @@ function update_logement($node_ID, $post_id, $label, $token_access):void {
     }
 
 
-    update_relationship($node_ID, $label, $token_access);
+    update_relationship_pop($node_ID, $label, $token_access);
 
 
 //    error_log("result: ".print_r($update_response, true));
@@ -221,7 +221,7 @@ function update_logement($node_ID, $post_id, $label, $token_access):void {
     error_log("");
 }
 
-function update_relationship($node_ID, $label, $token_access): void
+function update_relationship_pop($node_ID, $label, $token_access): void
 {
     error_log("=====================================");
     error_log('update_relationship');
@@ -329,6 +329,57 @@ function update_relationship($node_ID, $label, $token_access): void
     $result = wp_remote_request($GLOBALS['API_URL'].'/q', $args);
 
 
+}
+
+function update_relationship($logement_node_ID, $info_object_to_connect, $object_id_label, $relationship_type, $token_access): void{
+    error_log("");
+    error_log("logement_node_ID: ".$logement_node_ID);
+    error_log("Objects to connect to: ".print_r($info_object_to_connect, true));
+    error_log("");
+
+    // GET Node ID of the room
+
+    if (!$info_object_to_connect){
+        error_log("No piece");
+        return;
+    }
+
+    $nodes_to_connect_to = array();
+
+    $ID_url = "/graph/read_node_collection";
+    error_log("URL: ".$GLOBALS['API_URL'].$ID_url);
+    foreach ($info_object_to_connect as $object_to_connect){
+        $object_to_connect_id = $object_to_connect->post_title;
+
+        $response = wp_remote_get(
+            $GLOBALS['API_URL'].$ID_url."?search_node_property=".urlencode($object_id_label)."&node_property_value=".urlencode($object_to_connect_id),
+            array(
+                'headers' => array(
+                    'Content-Type' => 'application/x-www-form-urlencoded',
+                    'Accept' => 'application/json',
+                    'Authorization' => 'bearer '.$token_access
+                ),
+            )
+        );
+
+        if( is_wp_error( $response ) ) {
+            error_log("Error");
+        }
+
+
+//        error_log(print_r($response, true));
+
+        $object_node_ID = json_decode($response['body'], true)['nodes'][0]['node_id'];
+
+        // Create Relationship is_in between the equipment and the room
+
+        $nodes_to_connect_to[] = array("ID"=>$object_node_ID, "Label"=>"piece");
+
+    }
+
+    $node_logement = array("ID"=>$logement_node_ID, "Label"=>"logement");
+
+    update_relationship_between_node($node_logement, array($nodes_to_connect_to), $relationship_type, $token_access);
 }
 
 

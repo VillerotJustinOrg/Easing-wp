@@ -31,9 +31,9 @@ function Router_Equipement_domotique($post, $post_id, $label, $token_access): vo
         create_Equipement_domotique($post, $post_id, $label, $token_access, $fields);
     }
     else {
-        if ($Post_Status != "trash"){
+        if ($Post_Status == "publish"){
             update_Equipement_domotique($node_ID, $post_id, $token_access);
-        } elseif ($Post_Status == "publish") {
+        } elseif ($Post_Status == "trash") {
             delete_Equipement_domotique($node_ID, $token_access);
         } else {
             // If you want to do something on draft
