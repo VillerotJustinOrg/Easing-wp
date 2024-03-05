@@ -37,7 +37,7 @@
     <title>Easing</title>
     <!-- Autres balises meta, liens CSS, etc. peuvent être ajoutés ici -->
 </head>
-<body <?php if(get_the_ID()==27){ ?> onload="initialize()"  class="overflow-none" <?php }else{ ?> onload="initializeLogement() <?php } ?>">
+<body <?php if(get_the_ID()==27){ ?> onload="initialize()"  class="overflow-none" <?php }else{ ?> onload="initializeLogement()"<?php } ?>>
 
 <header class="d-flex align-items-center justify-content-end">
 

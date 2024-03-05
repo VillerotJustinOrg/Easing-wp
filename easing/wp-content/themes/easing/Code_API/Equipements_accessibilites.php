@@ -313,7 +313,7 @@ function update_link_piece($equipment_node_ID, $info_piece_type, $token_access):
     error_log("URL: ".$GLOBALS['API_URL'].$ID_url);
 
     $response = wp_remote_get(
-        $GLOBALS['API_URL'].$ID_url."?search_node_property=ID_Service_Type_Piece&node_property_value=".urlencode($room_id), array(
+        $GLOBALS['API_URL'].$ID_url."?search_node_property=ID_Piece&node_property_value=".urlencode($room_id), array(
             'headers' => array(
                 'Content-Type' => 'application/x-www-form-urlencoded',
                 'Accept' => 'application/json',

@@ -10,13 +10,13 @@ function Router_Default($post, $post_id, $label, $token_access): void {
     $Post_Status = $post->post_status;
 
     $WP_ID = $post->post_title;
-    $node_ID = get_Restriction_id($WP_ID, $token_access);
+    $node_ID = get_Node_id($WP_ID, $label, $token_access);
 
     error_log("===================================");
     error_log("              Info");
     error_log("Post Status: ".$Post_Status);
     error_log("Label: ".$label);
-    error_log("Restriction_ID: ".$Restriction_ID);
+    error_log(ucfirst($label)."_ID: ".$node_ID);
     error_log("Node ID: ".$node_ID);
     error_log("===================================");
     error_log("");
@@ -28,13 +28,13 @@ function Router_Default($post, $post_id, $label, $token_access): void {
             error_log("fields empty");
             return;
         }
-        create_Restriction($post, $post_id, $label, $token_access, $fields);
+        create_Node($post, $post_id, $label, $token_access, $fields);
     }
     else {
         if ($Post_Status == "publish"){
-            update_Restriction($node_ID, $post_id, $token_access);
+            update_Node($node_ID, $post_id, $token_access);
         } elseif ($Post_Status == "trash") {
-            delete_Restriction($node_ID, $token_access);
+            delete_Node($node_ID, $token_access);
         } else {
             // If you want to do something on draft
             error_log("Draft");
@@ -45,17 +45,21 @@ function Router_Default($post, $post_id, $label, $token_access): void {
 function get_Node($Restriction_ID, $label, $token_access){
     error_log("");
     error_log("====================================");
-    error_log("         Get Restriction");
+    error_log("         Get $label");
     error_log("====================================");
     error_log("ID: ".$Restriction_ID);
+    error_log("Label: ".$label);
     error_log("token: ".$token_access);
 
     $ID_url = "/graph/read_node_collection";
 
     error_log("URL: ".$GLOBALS['API_URL'].$ID_url);
 
+    $search_node_property = "ID_".ucfirst($label);
+    error_log("Search_node_property: ".$search_node_property);
+
     $response = wp_remote_get(
-        $GLOBALS['API_URL'].$ID_url."?search_node_property=ID_Restriction&node_property_value=".urlencode($Restriction_ID), array(
+        $GLOBALS['API_URL'].$ID_url."?search_node_property=".urlencode($search_node_property)."&node_property_value=".urlencode($Restriction_ID), array(
             'headers' => array(
                 'Content-Type' => 'application/x-www-form-urlencoded',
                 'Accept' => 'application/json',
@@ -74,13 +78,13 @@ function get_Node($Restriction_ID, $label, $token_access){
 
 
     if (count($Restrictions['nodes']) > 0) {
-        error_log("========================================= Get Restriction");
+        error_log("========================================= Get $label");
         error_log("");
         error_log("");
 
         return $Restrictions['nodes'][0];
     } else {
-        error_log("========================================= Get Restriction");
+        error_log("========================================= Get $label");
         error_log("");
         error_log("");
 
@@ -89,18 +93,19 @@ function get_Node($Restriction_ID, $label, $token_access){
 
 }
 
-function get_Restriction_id($Restriction_ID, $token_access){
+function get_Node_id($WP_ID, $label, $token_access){
     error_log("");
     error_log("=========================================");
-    error_log("              Get Restriction ID");
+    error_log("              Get $label ID");
     error_log("=========================================");
-    error_log("ID: ".$Restriction_ID);
+    error_log("ID: ".$WP_ID);
+    error_log("Label: ".$label);
     error_log("token: ".$token_access);
 
-    $Restriction = get_Restriction($Restriction_ID, $token_access);
+    $Node = get_Node($WP_ID, $label, $token_access);
 
-    if ($Restriction != -1) {
-        $node_ID = $Restriction['node_id'];
+    if ($Node != -1) {
+        $node_ID = $Node['node_id'];
 
         error_log("========================================= Get Restriction ID");
         error_log("");
@@ -116,10 +121,10 @@ function get_Restriction_id($Restriction_ID, $token_access){
     }
 }
 
-function create_Restriction($post, $post_id, $label, $token_access, $fields):void {
+function create_Node($post, $post_id, $label, $token_access, $fields):void {
     error_log("");
     error_log("=========================================");
-    error_log("              Create Restriction");
+    error_log("              Create Node");
     error_log("=========================================");
     error_log("post_id: ".$post_id);
     error_log("label: ".$label);
@@ -137,8 +142,10 @@ function create_Restriction($post, $post_id, $label, $token_access, $fields):voi
 
 //    error_log("complete url: ".$complete_url);
 
+    $search_node_property = "ID_".ucfirst($label);
+
     $create_body = array(
-        'ID_Restriction'=>$Restriction_ID,
+        $search_node_property=>$Restriction_ID,
         'ID_Post'=>$post_id
     );
 
@@ -168,10 +175,10 @@ function create_Restriction($post, $post_id, $label, $token_access, $fields):voi
     error_log("");
 }
 
-function update_Restriction($node_ID, $post_id, $token_access):void {
+function update_Node($node_ID, $post_id, $token_access):void {
     error_log("");
     error_log("=====================================");
-    error_log("            Edit Restriction");
+    error_log("            Edit Node");
     error_log("=====================================");
 
     // =================================================================================================================
@@ -204,38 +211,18 @@ function update_Restriction($node_ID, $post_id, $token_access):void {
     }
 
 //    error_log("result: ".print_r($update_response, true));
-    error_log("========================================= Edit Restriction");
+    error_log("========================================= Edit Node");
     error_log("");
     error_log("");
 }
 
-function delete_Restriction($node_id, $token_access):void {
+function delete_Node($node_id, $token_access):void {
     error_log("");
     error_log("=========================================");
     error_log("              Delete Restriction");
     error_log("=========================================");
 
-    // DELETE all RELATIONSHIP
-
-    // Delete all relationship linked to the logement
-    $DEL_All_R_URL = "/graph/delete_all_relationship/$node_id";
-
-    $header = array(
-        'Content-Type'=>'application/json',
-        'Accept' => 'application/json',
-        'Authorization' => 'bearer '.$token_access
-    );
-
-    $args = array(
-        'headers' => $header,
-        'method' => 'POST'
-    );
-
-    $relationship_response = wp_remote_request( $GLOBALS['API_URL'].$DEL_All_R_URL, $args);
-    if( is_wp_error($relationship_response) ) {
-        error_log("Error");
-    }
-
+    Delete_All_Relationship($node_id, $token_access);
 
     $complete_url = $GLOBALS['API_URL']."/graph/delete/".$node_id;
 
@@ -262,4 +249,28 @@ function delete_Restriction($node_id, $token_access):void {
     error_log("");
     error_log("");
 
+}
+
+function Delete_All_Relationship($node_id, $token_access)
+{
+    // DELETE all RELATIONSHIP
+
+    // Delete all relationship linked to the logement
+    $DEL_All_R_URL = "/graph/delete_all_relationship/$node_id";
+
+    $header = array(
+        'Content-Type'=>'application/json',
+        'Accept' => 'application/json',
+        'Authorization' => 'bearer '.$token_access
+    );
+
+    $args = array(
+        'headers' => $header,
+        'method' => 'POST'
+    );
+
+    $relationship_response = wp_remote_request( $GLOBALS['API_URL'].$DEL_All_R_URL, $args);
+    if( is_wp_error($relationship_response) ) {
+        error_log("Error");
+    }
 }

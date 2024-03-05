@@ -261,7 +261,7 @@ function update_logement($node_ID, $post_id, $label, $token_access):void {
     update_relationship(
         $node_ID,
         get_field('contient_pieces', $post_id),
-        'ID_Service_Type_Piece',
+        'ID_Piece',
         'piece',
         'contain',
         $token_access
@@ -452,6 +452,7 @@ function Visit_3D_Treatment($Visite_ZIP_Data): void
     error_log("====================================================================");
     error_log("                         Visit 3D Treatment");
     error_log("====================================================================");
+    if ($Visite_ZIP_Data == null) return;
     error_log("Visite_ZIP_Data: ".print_r($Visite_ZIP_Data, true));
     $file_url = wp_get_attachment_url($Visite_ZIP_Data['ID'] );
     $root = $_SERVER["DOCUMENT_ROOT"];
