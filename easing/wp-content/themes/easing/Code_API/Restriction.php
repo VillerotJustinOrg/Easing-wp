@@ -138,7 +138,8 @@ function create_Restriction($post, $post_id, $label, $token_access, $fields):voi
 //    error_log("complete url: ".$complete_url);
 
     $create_body = array(
-        'ID_Restriction'=>$Restriction_ID
+        'ID_Restriction'=>$Restriction_ID,
+        'ID_Post'=>$post_id
     );
 
     $create_body= add_field_info_to_body($create_body, $fields);
@@ -180,7 +181,7 @@ function update_Restriction($node_ID, $post_id, $token_access):void {
     $update_url = "/graph/update/".$node_ID;
 
 
-    $update_body = array();
+    $update_body = array('ID_Post'=>$post_id);
 
     $update_body= add_field_info_to_body($update_body, get_fields($post_id));
 

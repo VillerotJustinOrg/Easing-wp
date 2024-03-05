@@ -213,7 +213,7 @@ function create_relationship_between_node(
         error_log("Error");
     }
 
-//        error_log("result: ".print_r($create_response, true));
+    error_log("result: ".print_r($create_response, true));
 
     $data = json_decode($create_response["body"], true);
 //    error_log("data: ".print_r($data, true));
@@ -289,3 +289,40 @@ function delete_relationship($relationship_id, $token_access)
         error_log("Error delete relationship");
     }
 }
+
+
+function request($body, $headers, $URL, $method){
+    error_log("");
+    error_log("");
+    error_log("==========Request==========");
+    error_log("URL: ".$URL);
+    error_log("Method: ".$method);
+    error_log("Body: ".print_r($body, true));
+    error_log("Header: ".print_r($headers, true));
+    error_log("");
+
+    $args = array(
+        'headers' => $headers,
+        'body' => json_encode($body),
+        'method' => $method
+    );
+
+    $response = wp_remote_request($URL, $args);
+
+    $response_code = $response['response']['code'];
+
+    $response_body = json_decode($response['body'], true);
+
+    error_log("==========Result==========");
+    error_log("Response Code: ".$response_code);
+    error_log("Response: ".print_r($response_body, true));
+
+    error_log("");
+    error_log("");
+    return array(
+        'response_code'=>$response_code,
+        'response'=>$response_body
+    );
+}
+
+

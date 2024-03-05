@@ -77,15 +77,16 @@ function get_CLient($CLient_ID, $token_access){
 
 //    error_log(print_r($response, true));
 
-    $CLients = json_decode($response['body'], true);
+    $Clients = json_decode($response['body'], true);
 
+    error_log(print_r($Clients, true));
 
-    if (count($CLients['nodes']) > 0) {
+    if (count($Clients['nodes']) > 0) {
         error_log("========================================= Get CLient");
         error_log("");
         error_log("");
 
-        return $CLients['nodes'][0];
+        return $Clients['nodes'][0];
     } else {
         error_log("========================================= Get CLient");
         error_log("");
@@ -145,7 +146,8 @@ function create_Client($post, $post_id, $label, $token_access, $fields):void {
 //    error_log("complete url: ".$complete_url);
 
     $create_body = array(
-        'ID_CLient'=>$CLient_ID
+        'ID_CLient'=>$CLient_ID,
+        'ID_Post'=>$post_id
     );
 
     $create_body= add_field_info_to_body($create_body, $fields);
@@ -187,7 +189,9 @@ function update_CLient($node_ID, $post_id, $token_access):void {
     $update_url = "/graph/update/".$node_ID;
 
 
-    $update_body = array();
+    $update_body = array(
+        'ID_Post'=>$post_id
+    );
 
     $update_body = add_field_info_to_body($update_body, get_fields($post_id));
 

@@ -133,7 +133,8 @@ function create_Equipement_access($post, $post_id, $label, $token_access):void {
 //    error_log("complete url: ".$complete_url);
 
     $create_body = array(
-        'ID_Equipement_access'=>$Equipement_access_ID
+        'ID_Equipement_access'=>$Equipement_access_ID,
+        'ID_Post'=>$post_id
     );
 
     $fields =get_fields($post_id);
@@ -219,7 +220,7 @@ function update_Equipement_access($node_ID, $post_id, $token_access):void {
     $update_url = "/graph/update/".$node_ID;
 
 
-    $update_body = array();
+    $update_body = array('ID_Post'=>$post_id);
 
     $fields =get_fields($post_id);
     if (gettype($fields) =="array"){

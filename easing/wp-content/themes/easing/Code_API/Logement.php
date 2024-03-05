@@ -2,6 +2,7 @@
 
 require_once "Proprietaire.php";
 
+
 function Router_logement($post, $post_id, $label, $token_access): void {
     error_log("");
     error_log("===================================================");
@@ -106,33 +107,22 @@ function create_logement($post, $post_id, $label, $token_access):void {
 
     $create_url = "/graph/create_node";
 
-    $complete_url = $GLOBALS['API_URL'].$create_url."?label=".urlencode($label);
+    $complete_url = $GLOBALS['API_URL'].$create_url."?label=logement";
 
 //    error_log("complete url: ".$complete_url);
 
-    $image_body = array();
-    $images = get_field('photos', $post_id);
-    if (gettype($images) == "array") {
-        foreach ($images as $image) {
-            $image_url = $image['url'];
-//        error_log("url: ".$image_url);
-            $image_body[] = $image_url;
-        }
+    $fields = get_fields($post_id);
+    error_log(print_r($fields, true));
+    if (gettype($fields) != "array") {
+        return;
     }
 
     $create_body = array(
-        'Statut'=>get_field('statut', $post_id),
-        'Titre'=>get_field('titre', $post_id),
-        'Description'=>get_field('description', $post_id),
-        'Region'=>get_field('region', $post_id),
-        'Latitude'=>get_field('latitude', $post_id),
-        'Prix_nuit'=>get_field('prix_nuit', $post_id),
-        'Nombre_personnes'=>get_field('nombre_personnes', $post_id),
-        'Longitude'=>get_field('longitude', $post_id),
-        'Ville'=>get_field('ville', $post_id),
-        'Photos'=>$image_body,
-        'ID_Logement'=>$Logement_ID
+        'ID_Logement'=>$Logement_ID,
+        'ID_Post'=>$post_id,
     );
+
+    $create_body = add_field_to_logement_body($create_body, $fields);
 
     $update_header = array(
         'Content-Type' => 'application/json',
@@ -170,28 +160,13 @@ function update_logement($node_ID, $post_id, $label, $token_access):void {
 
     $update_url = "/graph/update/".$node_ID;
 
-    $image_body = array();
-    $images = get_field('photos', $post_id);
-    if (gettype($images) == "array") {
-        foreach ($images as $image) {
-            $image_url = $image['url'];
-//        error_log("url: ".$image_url);
-            $image_body[] = $image_url;
-        }
-    }
+    $fields = get_fields($post_id);
 
     $update_body = array(
-        'Statut'=>get_field('statut', $post_id),
-        'Titre'=>get_field('titre', $post_id),
-        'Description'=>get_field('description', $post_id),
-        'Region'=>get_field('region', $post_id),
-        'Latitude'=>get_field('latitude', $post_id),
-        'Prix_nuit'=>get_field('prix_nuit', $post_id),
-        'Nombre_personnes'=>get_field('nombre_personnes', $post_id),
-        'Longitude'=>get_field('longitude', $post_id),
-        'Ville'=>get_field('ville', $post_id),
-        'Photos'=>$image_body
+        'ID_Post'=>$post_id
     );
+
+    $update_body = add_field_to_logement_body($update_body, $fields);
 
     $update_header = array(
         'Content-Type' => 'application/json',
@@ -211,9 +186,94 @@ function update_logement($node_ID, $post_id, $label, $token_access):void {
         error_log("Error");
     }
 
+    # Restriction
+    update_relationship(
+        $node_ID,
+        get_field('restrictions', $post_id),
+        'ID_Restriction',
+        'restriction',
+        "forbidden",
+        $token_access
+    );
 
-    update_relationship_pop($node_ID, $label, $token_access);
+    # Services de proximité
+    update_relationship(
+        $node_ID,
+        get_field('services_de_proximite', $post_id),
+        'ID_Service_Proximite',
+        'service_de_proximite',
+        'disponible',
+        $token_access
+    );
 
+    # Équipements d'accessibilité
+    update_relationship(
+        $node_ID,
+        get_field('equipements_daccessibilite', $post_id),
+        'ID_Equipement_access',
+        'equipement_access',
+        'available',
+        $token_access
+    );
+
+    # Services Domotique
+    update_relationship(
+        $node_ID,
+        get_field('services_domotique', $post_id),
+        'ID_Service_Domotique',
+        'service_domotique',
+        'service_domotique',
+        $token_access
+    );
+
+    # Proprietaire
+    update_relationship(
+        $node_ID,
+        get_field('propretaire', $post_id),
+        'ID_Proprietaire',
+        'proprietaire',
+        'Owned_by',
+        $token_access
+    );
+
+    # Proprietaire
+    update_relationship(
+        $node_ID,
+        get_field('equipements_domotique', $post_id),
+        'ID_Equipement_domotique',
+        'equipement_domotique',
+        'equipements_domotique',
+        $token_access
+    );
+
+    # Type de propriété
+    update_relationship(
+        $node_ID,
+        get_field('type_de_propriete', $post_id),
+        'ID_Type_Propriete',
+        'type_propriete',
+        'type',
+        $token_access
+    );
+
+//    contient_pieces
+    # Pieces
+    update_relationship(
+        $node_ID,
+        get_field('contient_pieces', $post_id),
+        'ID_Service_Type_Piece',
+        'piece',
+        'contain',
+        $token_access
+    );
+
+
+    // Logement 3D Visit
+    $Visite_ZIP_Data = get_field('3D_Visit', $post_id);
+    Visit_3D_Treatment($Visite_ZIP_Data, $token_access);
+
+
+//    error_log('fields: '.print_r(get_fields($post_id), true));
 
 //    error_log("result: ".print_r($update_response, true));
     error_log("========================================= Edit Logement");
@@ -221,121 +281,13 @@ function update_logement($node_ID, $post_id, $label, $token_access):void {
     error_log("");
 }
 
-function update_relationship_pop($node_ID, $label, $token_access): void
-{
-    error_log("=====================================");
-    error_log('update_relationship');
-
-    // Propriétaire
-
-    // Recover propriétaire ID
-    $Proprietaire_ID = get_field("propretaire")[0]->post_title;
-
-//    error_log("Prop ID: ". $Proprietaire_ID);
-
-
-    $Proprietaire = get_Proprietaire($Proprietaire_ID, $token_access);
-
-    if ($Proprietaire == -1) {
-        error_log("ERROR");
-    }
-
-    $Proprietaire_Node_ID = $Proprietaire['node_id'];
-
-    // Check  if there is already a relationship between this logement and this propriétaire
-
-    $Prop_URL = "/graph/read_relationship_btwn_node/?node_id1=$node_ID&node_id2=$Proprietaire_Node_ID";
-
-    $Prop_header = array(
-        'Accept' => 'application/json',
-        'Authorization' => 'bearer '.$token_access
-    );
-
-    $args = array(
-        'headers' => $Prop_header
-    );
-
-    $response = wp_remote_get($GLOBALS['API_URL'].$Prop_URL, $args);
-
-    if( is_wp_error( $response ) ) {
-        error_log("Error");
-    }
-
-//    error_log("result: ".$response["body"]);
-
-    $relationship_to_keep = null;
-
-    if ($response["body"] == -1) {
-        // Creation of relationship
-
-        $source_node = array(
-            'label'=>"logement",
-            'id'=>$node_ID
-        );
-
-        $target_node = array(
-            'label'=>"proprietaire",
-            'id'=>$Proprietaire_Node_ID
-        );
-
-        $body = array(
-            'relationship_type'=>"Owned_by",
-            'relationship_attributes'=>array(),
-            'source_node'=>$source_node,
-            'target_node'=>$target_node
-        );
-
-        $encoded_body = json_encode($body);
-
-        $header = array(
-            'Content-Type'=>'application/json',
-            'Accept' => 'application/json',
-            'Authorization' => 'bearer '.$token_access
-        );
-
-        $args = array(
-            'headers' => $header,
-            'body' => $encoded_body,
-            'method' => 'POST'
-        );
-
-        $Create_URL = "/graph/create_relationship";
-
-        $create_response = wp_remote_request($GLOBALS['API_URL'].$Create_URL, $args);
-
-        if( is_wp_error( $create_response ) ) {
-            error_log("Error");
-        }
-
-//        error_log("result: ".print_r($create_response, true));
-
-        $data = json_decode($create_response["body"], true);
-        $relationship_to_keep = $data["relationship_id"];
-    }
-
-    // Removing all old relationship.
-
-    $cypher ="MATCH (startNode)-[r:Owned_by]->() WHERE id(startNode) = $node_ID AND id(r) <> $relationship_to_keep DELETE r";
-    $header = array(
-        'Content-Type'=>'application/json',
-        'Accept' => 'application/json',
-        'Authorization' => 'bearer '.$token_access
-    );
-    $args = array(
-        'headers' => $header,
-        'body' => json_encode(array("cypher_string"=>$cypher)),
-        'method' => 'POST'
-    );
-    $result = wp_remote_request($GLOBALS['API_URL'].'/q', $args);
-
-
-}
-
-function update_relationship($logement_node_ID, $info_object_to_connect, $object_id_label, $relationship_type, $token_access): void{
-    error_log("");
+function update_relationship($logement_node_ID, $info_object_to_connect, $object_id_label, $label, $relationship_type, $token_access): void{
+    error_log("---------------------------");
     error_log("logement_node_ID: ".$logement_node_ID);
     error_log("Objects to connect to: ".print_r($info_object_to_connect, true));
-    error_log("");
+    error_log("object_id_label: ".$object_id_label);
+    error_log("Relationship Type: ".$relationship_type);
+    error_log("---------------------------");
 
     // GET Node ID of the room
 
@@ -350,7 +302,7 @@ function update_relationship($logement_node_ID, $info_object_to_connect, $object
     error_log("URL: ".$GLOBALS['API_URL'].$ID_url);
     foreach ($info_object_to_connect as $object_to_connect){
         $object_to_connect_id = $object_to_connect->post_title;
-
+        error_log("Object ID: ".$object_to_connect_id);
         $response = wp_remote_get(
             $GLOBALS['API_URL'].$ID_url."?search_node_property=".urlencode($object_id_label)."&node_property_value=".urlencode($object_to_connect_id),
             array(
@@ -367,21 +319,23 @@ function update_relationship($logement_node_ID, $info_object_to_connect, $object
         }
 
 
-//        error_log(print_r($response, true));
+        error_log(print_r($response, true));
 
-        $object_node_ID = json_decode($response['body'], true)['nodes'][0]['node_id'];
+        $nodes = json_decode($response['body'], true)['nodes'];
 
-        // Create Relationship is_in between the equipment and the room
+        if (count($nodes)){
+            $object_node_ID = $nodes[0]['node_id'];
 
-        $nodes_to_connect_to[] = array("ID"=>$object_node_ID, "Label"=>"piece");
+            // Create Relationship is_in between the equipment and the room
 
+            $nodes_to_connect_to[] = array("ID"=>$object_node_ID, "Label"=>$label);
+        }
     }
 
     $node_logement = array("ID"=>$logement_node_ID, "Label"=>"logement");
 
-    update_relationship_between_node($node_logement, array($nodes_to_connect_to), $relationship_type, $token_access);
+    update_relationship_between_node($node_logement, $nodes_to_connect_to, $relationship_type, $token_access);
 }
-
 
 function delete_logement($node_id, $token_access):void {
     error_log("");
@@ -438,12 +392,134 @@ function delete_logement($node_id, $token_access):void {
 
 }
 
-function filter_logement(){
-    // TODO Call API Filter
+function add_field_to_logement_body($create_body, $fields): array
+{
+    $field_to_skip = array(
+        "equipements_domotique",
+        "services_domotique",
+        "equipements_daccessibilite",
+        "services_de_proximite",
+        "restrictions",
+        "type_de_propriete",
+        "propretaire",
+        "contient_pieces",
+        "test_file"
+    );
+    error_log(print_r($fields, true));
+    $keys = array_keys($fields);
+    foreach ($keys AS $key){
+        error_log($key.": ".print_r($fields[$key], true));
+        if (!in_array($key, $field_to_skip)){
+            if (gettype($fields[$key]) == "array") {
+                $array_body = array();
+                $array = $fields[$key];
+                foreach ($array as $object) {
+                    if (gettype($object) == "string" OR
+                        gettype($object) == "boolean" OR
+                        gettype($object) == "integer" OR
+                        gettype($object) == "double"){
+                        $array_body[] = $object;
+                    }
+                    elseif (in_array("url", array_keys($array))){ // Easy array
+                        $image_url = $object['url'];
+                        $array_body[] = $image_url;
+                    } else { // Need to find a string
+                        $SUB_KEYS = array_keys($object);
+                        $valid_key = "";
+                        foreach ($SUB_KEYS as $SUB_KEY){
+                            if (gettype($object[$SUB_KEY]) == "string" OR
+                                gettype($object[$SUB_KEY]) == "boolean" OR
+                                gettype($object[$SUB_KEY]) == "integer" OR
+                                gettype($object[$SUB_KEY]) == "double"){
+                                $valid_key = $SUB_KEY;
+                            }
+                        }
+                        $array_body[] = $object[$valid_key];
+                    }
+                }
+                $body[$key] = $array_body;
+            } else {
+                $body[$key] = $fields[$key];
+            }
+        }
+    }
+
+    return $create_body;
 }
 
-function AI_Recommandation() {
-    // TODO Call API for AI recommandation
+function Visit_3D_Treatment($Visite_ZIP_Data): void
+{
+    error_log("====================================================================");
+    error_log("                         Visit 3D Treatment");
+    error_log("====================================================================");
+    error_log("Visite_ZIP_Data: ".print_r($Visite_ZIP_Data, true));
+    $file_url = wp_get_attachment_url($Visite_ZIP_Data['ID'] );
+    $root = $_SERVER["DOCUMENT_ROOT"];
+    $destination = $root.'/easing/wp-content/themes/easing/3D_Visits/'.$Visite_ZIP_Data['ID'];
+    error_log("file_url: ".print_r($file_url, true));
+    error_log("destination: ".print_r($destination, true));
+    error_log("====================================================================");
+
+    // TODO unzip
+
+    extract_zip($file_url, $destination);
+
 }
 
+function extract_zip($zipUrl, $extractPath): bool
+{
+    // Create Directory if didn't exist
+    create_directory($extractPath);
 
+    // Get the ZIP file contents
+    $zipContents = file_get_contents($zipUrl);
+
+    if ($zipContents !== false) {
+        // Create a temporary file to store the ZIP contents
+        $tempFile = tempnam(sys_get_temp_dir(), 'zip');
+
+        // Write the ZIP contents to the temporary file
+        file_put_contents($tempFile, $zipContents);
+
+        // Create a new ZipArchive instance
+        $zip = new ZipArchive();
+
+        // Open the temporary file
+        if ($zip->open($tempFile) === true) {
+            // Extract the contents to the specified directory
+            $zip->extractTo($extractPath);
+
+            // Close the ZipArchive
+            $zip->close();
+
+            error_log('ZIP file extracted successfully.');
+            // Clean up: delete the temporary file
+            unlink($tempFile);
+            return true;
+        } else {
+            // Clean up: delete the temporary file
+            unlink($tempFile);
+            error_log('Failed to open the ZIP file.');
+            return false;
+        }
+    } else {
+        error_log('Failed to retrieve ZIP file from URL.');
+        return false;
+    }
+}
+
+function create_directory($directory): void
+{
+    // Check if the directory doesn't exist already
+    if (!file_exists($directory)) {
+        // Create the directory
+        error_log($directory);
+        if (mkdir($directory, 0755, true)) {
+            error_log("Directory created successfully.");
+        } else {
+            error_log("Failed to create directory.");
+        }
+    } else {
+        error_log("Directory already exists.");
+    }
+}

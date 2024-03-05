@@ -1,35 +1,40 @@
 <?php
 
-function Router_Proprietaire($post, $post_id, $label, $token_access): void {
+function Router_Default($post, $post_id, $label, $token_access): void {
     error_log("");
     error_log("===================================================");
-    error_log("              Router Proprietaire");
+    error_log("              Router Default");
     error_log("===================================================");
     error_log("");
 
     $Post_Status = $post->post_status;
 
-    $Proprietaire_ID = $post->post_title;
-    $node_ID = get_Proprietaire_id($Proprietaire_ID, $token_access);
+    $WP_ID = $post->post_title;
+    $node_ID = get_Restriction_id($WP_ID, $token_access);
 
     error_log("===================================");
     error_log("              Info");
     error_log("Post Status: ".$Post_Status);
     error_log("Label: ".$label);
-    error_log("Proprietaire_ID: ".$Proprietaire_ID);
+    error_log("Restriction_ID: ".$Restriction_ID);
     error_log("Node ID: ".$node_ID);
     error_log("===================================");
     error_log("");
 
 
     if ($node_ID < 1) {
-        create_Proprietaire($post, $post_id, $label, $token_access);
+        $fields = get_fields($post_id);
+        if (gettype($fields) != "array"){
+            error_log("fields empty");
+            return;
+        }
+        create_Restriction($post, $post_id, $label, $token_access, $fields);
     }
     else {
         if ($Post_Status == "publish"){
-            update_Proprietaire($node_ID, $post_id, $token_access);
+            update_Restriction($node_ID, $post_id, $token_access);
         } elseif ($Post_Status == "trash") {
-            delete_Proprietaire($node_ID, $token_access);
+            delete_Restriction($node_ID, $token_access);
         } else {
             // If you want to do something on draft
             error_log("Draft");
@@ -37,12 +42,12 @@ function Router_Proprietaire($post, $post_id, $label, $token_access): void {
     }
 }
 
-function get_Proprietaire($Proprietaire_ID, $token_access){
+function get_Node($Restriction_ID, $label, $token_access){
     error_log("");
     error_log("====================================");
-    error_log("         Get Proprietaire");
+    error_log("         Get Restriction");
     error_log("====================================");
-    error_log("ID: ".$Proprietaire_ID);
+    error_log("ID: ".$Restriction_ID);
     error_log("token: ".$token_access);
 
     $ID_url = "/graph/read_node_collection";
@@ -50,7 +55,7 @@ function get_Proprietaire($Proprietaire_ID, $token_access){
     error_log("URL: ".$GLOBALS['API_URL'].$ID_url);
 
     $response = wp_remote_get(
-        $GLOBALS['API_URL'].$ID_url."?search_node_property=ID_Proprietaire&node_property_value=".urlencode($Proprietaire_ID), array(
+        $GLOBALS['API_URL'].$ID_url."?search_node_property=ID_Restriction&node_property_value=".urlencode($Restriction_ID), array(
             'headers' => array(
                 'Content-Type' => 'application/x-www-form-urlencoded',
                 'Accept' => 'application/json',
@@ -65,17 +70,17 @@ function get_Proprietaire($Proprietaire_ID, $token_access){
 
 //    error_log(print_r($response, true));
 
-    $Proprietaires = json_decode($response['body'], true);
+    $Restrictions = json_decode($response['body'], true);
 
 
-    if (count($Proprietaires['nodes']) > 0) {
-        error_log("========================================= Get Proprietaire");
+    if (count($Restrictions['nodes']) > 0) {
+        error_log("========================================= Get Restriction");
         error_log("");
         error_log("");
 
-        return $Proprietaires['nodes'][0];
+        return $Restrictions['nodes'][0];
     } else {
-        error_log("========================================= Get Proprietaire");
+        error_log("========================================= Get Restriction");
         error_log("");
         error_log("");
 
@@ -84,27 +89,26 @@ function get_Proprietaire($Proprietaire_ID, $token_access){
 
 }
 
-
-function get_Proprietaire_id($Proprietaire_ID, $token_access){
+function get_Restriction_id($Restriction_ID, $token_access){
     error_log("");
     error_log("=========================================");
-    error_log("              Get Proprietaire ID");
+    error_log("              Get Restriction ID");
     error_log("=========================================");
-    error_log("ID: ".$Proprietaire_ID);
+    error_log("ID: ".$Restriction_ID);
     error_log("token: ".$token_access);
 
-    $Proprietaire = get_Proprietaire($Proprietaire_ID, $token_access);
+    $Restriction = get_Restriction($Restriction_ID, $token_access);
 
-    if ($Proprietaire != -1) {
-        $node_ID = $Proprietaire['node_id'];
+    if ($Restriction != -1) {
+        $node_ID = $Restriction['node_id'];
 
-        error_log("========================================= Get Proprietaire ID");
+        error_log("========================================= Get Restriction ID");
         error_log("");
         error_log("");
 
         return $node_ID;
     } else {
-        error_log("========================================= Get Proprietaire ID");
+        error_log("========================================= Get Restriction ID");
         error_log("");
         error_log("");
 
@@ -112,16 +116,16 @@ function get_Proprietaire_id($Proprietaire_ID, $token_access){
     }
 }
 
-function create_Proprietaire($post, $post_id, $label, $token_access):void {
+function create_Restriction($post, $post_id, $label, $token_access, $fields):void {
     error_log("");
     error_log("=========================================");
-    error_log("              Create Proprietaire");
+    error_log("              Create Restriction");
     error_log("=========================================");
     error_log("post_id: ".$post_id);
     error_log("label: ".$label);
     error_log("token: ".$token_access);
-    error_log("Proprietaire_ID: ".$post->post_title);
-    $Proprietaire_ID = $post->post_title;
+    error_log("Restriction_ID: ".$post->post_title);
+    $Restriction_ID = $post->post_title;
 
     // =================================================================================================================
     //                                                  Create Request
@@ -132,15 +136,13 @@ function create_Proprietaire($post, $post_id, $label, $token_access):void {
     $complete_url = $GLOBALS['API_URL'].$create_url."?label=".urlencode($label);
 
 //    error_log("complete url: ".$complete_url);
-    // TODO BODY
+
     $create_body = array(
-        'ID_Proprietaire'=>$Proprietaire_ID,
+        'ID_Restriction'=>$Restriction_ID,
         'ID_Post'=>$post_id
     );
 
-    $fields = get_fields($post_id);
-
-    $create_body = add_field_info_to_body($create_body, $fields);
+    $create_body= add_field_info_to_body($create_body, $fields);
 
     $update_header = array(
         'Content-Type' => 'application/json',
@@ -166,10 +168,10 @@ function create_Proprietaire($post, $post_id, $label, $token_access):void {
     error_log("");
 }
 
-function update_Proprietaire($node_ID, $post_id, $token_access):void {
+function update_Restriction($node_ID, $post_id, $token_access):void {
     error_log("");
     error_log("=====================================");
-    error_log("            Edit Proprietaire");
+    error_log("            Edit Restriction");
     error_log("=====================================");
 
     // =================================================================================================================
@@ -179,13 +181,9 @@ function update_Proprietaire($node_ID, $post_id, $token_access):void {
     $update_url = "/graph/update/".$node_ID;
 
 
-    $update_body = array(
-        'ID_Post'=>$post_id
-    );
+    $update_body = array('ID_Post'=>$post_id);
 
-    $fields = get_fields($post_id);
-
-    $update_body = add_field_info_to_body($update_body, $fields);
+    $update_body= add_field_info_to_body($update_body, get_fields($post_id));
 
     $update_header = array(
         'Content-Type' => 'application/json',
@@ -206,15 +204,15 @@ function update_Proprietaire($node_ID, $post_id, $token_access):void {
     }
 
 //    error_log("result: ".print_r($update_response, true));
-    error_log("========================================= Edit Proprietaire");
+    error_log("========================================= Edit Restriction");
     error_log("");
     error_log("");
 }
 
-function delete_Proprietaire($node_id, $token_access):void {
+function delete_Restriction($node_id, $token_access):void {
     error_log("");
     error_log("=========================================");
-    error_log("              Delete Proprietaire");
+    error_log("              Delete Restriction");
     error_log("=========================================");
 
     // DELETE all RELATIONSHIP
