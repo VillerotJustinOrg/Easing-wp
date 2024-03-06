@@ -176,12 +176,15 @@ header{
     border-radius:25px;
     padding:10px 30px 10px 30px;
     overflow-y:scroll;
+
+
+    h4{
+      text-align:center;
+      padding-top:20px
+    }
+
   }
   h3{
-    text-align:center;
-    padding-top:20px
-  }
-  h4{
     text-align:center;
     padding-top:20px
   }
