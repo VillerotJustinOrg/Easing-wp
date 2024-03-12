@@ -17,32 +17,48 @@ function get_API_Token() {
 
     $complete_url = $API_URL.$auth_url;
 
-    $body = "username=".$login."&password=".$passwd;
+    // Data to be sent in the request body
+    $body = http_build_query(array(
+        "username" => $login,
+        "password" => $passwd
+    ));
 
-    $header = array(
-        "Content-Type"=>"application/x-www-form-urlencoded",
-        "Accept"=>"application/json"
+    // Headers for the request
+    $headers = array(
+        "Content-Type: application/x-www-form-urlencoded",
+        "Accept: application/json"
     );
 
-    $args = array(
-        "body"=>$body,
-        "header"=>$header
-    );
+    // Initialize cURL session
+    $ch = curl_init();
 
-    $response = wp_remote_post($complete_url, $args);
+// Set cURL options
+    curl_setopt($ch, CURLOPT_URL, $complete_url);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-//    error_log("Response: ".print_r($response, true));
+// Execute cURL session
+    $response = curl_exec($ch);
 
-    if( is_wp_error( $response ) ) {
-        error_log("Error");
+// Check for errors
+    if ($response === false) {
+        $error = curl_error($ch);
+        error_log("cURL Error: " . $error);
     } else {
-        $result_data = json_decode($response["body"], true);
-        error_log('token: '.print_r($result_data, true));
+        // Decode JSON response
+        $result_data = json_decode($response, true);
+        // Log token or do other processing
+        error_log('token: ' . print_r($result_data, true));
         error_log("=========================================");
-        error_log("");
-        error_log("");
-        return $result_data;
     }
+
+// Close cURL session
+    curl_close($ch);
+
+// Return result data if needed
+    return $result_data;
 }
 
 // =======================================================================
@@ -52,10 +68,15 @@ function get_API_Token() {
 
 function add_field_info_to_body($body, $fields)
 {
+    $special_fields = [];
     error_log("add_field_info_to_body: ".print_r($fields, true));
     $keys = array_keys($fields);
     foreach ($keys as $key){
         error_log($key.": ".$fields[$key]);
+        if (in_array($key, $special_fields)) {
+            continue;
+        }
+
         if (gettype($fields[$key]) == "array") {
             $array_body = array();
             $array = $fields[$key];
@@ -291,7 +312,8 @@ function delete_relationship($relationship_id, $token_access)
 }
 
 
-function request($body, $headers, $URL, $method){
+function request(array $body, array $headers, string $URL, string $method): array
+{
     error_log("");
     error_log("");
     error_log("==========Request==========");
@@ -301,27 +323,45 @@ function request($body, $headers, $URL, $method){
     error_log("Header: ".print_r($headers, true));
     error_log("");
 
-    $args = array(
-        'headers' => $headers,
-        'body' => json_encode($body),
-        'method' => $method
-    );
+    // Initialize cURL session
+    $ch = curl_init();
 
-    $response = wp_remote_request($URL, $args);
+// Set cURL options
+    curl_setopt($ch, CURLOPT_URL, $URL);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($body));
 
-    $response_code = $response['response']['code'];
+// Execute cURL session
+    $response = curl_exec($ch);
 
-    $response_body = json_decode($response['body'], true);
+// Check for errors
+    if ($response === false) {
+        $error = curl_error($ch);
+        error_log("cURL Error: " . $error);
+        $response_code = 500; // Set response code to indicate error
+        $response_body = array("error" => $error);
+    } else {
+        // Get response code
+        $response_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        // Decode JSON response
+        $response_body = json_decode($response, true);
+    }
 
+// Log result
     error_log("==========Result==========");
     error_log("Response Code: ".$response_code);
     error_log("Response: ".print_r($response_body, true));
+    error_log("");
 
-    error_log("");
-    error_log("");
+// Close cURL session
+    curl_close($ch);
+
+// Return response code and body
     return array(
-        'response_code'=>$response_code,
-        'response'=>$response_body
+        'response_code' => $response_code,
+        'response' => $response_body
     );
 }
 

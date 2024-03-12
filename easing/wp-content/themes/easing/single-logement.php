@@ -2,9 +2,16 @@
 <?php
 require_once 'header.php';
 require_once 'Code_API/UtilsAPI.php';
+require_once 'reservation-treatment.php';
+
+if (isset($_POST['ID_Logement'])){
+//    Create location
+    treatment($_POST);
+}
+
 
 $fields=get_fields();
-
+$post = get_post();
 //error_log(print_r($fields, true));
 
 $nombre = $_GET["nombre"];
@@ -57,8 +64,37 @@ error_log("Response: ".print_r($response, true));
 
 // Visit URL
 $visite = $fields['3D_Visit'];
-$visite_URL = $visite['ID'].'/'.$visite['title']
+$visite_URL = $visite['ID'].'/'.$visite['title'];
 
+// Get Client List
+$cypher_string = "MATCH (n:client) RETURN n,  ID(n) as ID;";
+$body = array(
+        "cypher_string" => $cypher_string
+);
+
+$args = array(
+    'headers' => $header,
+    'body' => json_encode($body),
+    'method' => 'POST'
+);
+
+$response = wp_remote_post($URL, $args);
+$clients = json_decode($response['body'], true);
+error_log("Response: ".print_r($clients, true));
+
+$client_list = [];
+foreach ($clients["response"] as $client){
+    error_log(print_r(array_keys($client), true));
+    $client_info = array(
+            "node_ID"=>$client["ID"],
+            "name"=>$client["n"]["prenom"]." ".$client["n"]["nom"]
+    );
+    $client_list[] = $client_info;
+}
+
+$LG_Node_ID = get_logement_id($post->post_title, $token_access);
+
+$lien = get_permalink($post->ID);
 
 ?>
 
@@ -224,32 +260,53 @@ $visite_URL = $visite['ID'].'/'.$visite['title']
 
             </div>
 
-            <div class="pop-reserver" > 
-                <p><span style="font-size:25px" class="bold" > <?php echo $fields['prix_nuit']; ?></span> € par nuit </p>
-                
-                <div style="margin-top:10px" class="d-flex flex-row justify-content-between">
-
-                    <div class="d-flex flex-column" style="width:48%">
-                        <p> Arrivée </p>
-                        <input type="date" id="debut" name="debut" min="<?php echo date('Y-m-d'); ?>" value="<?php echo $debut ?>" />
+            <div class="pop-reserver">
+                <form action="" method="POST">
+                    <input type="hidden" name="ID_Logement" value="<?php echo $post->post_title; ?>">
+                    <input type="hidden" name="ID_Post" value="<?php echo $post->ID; ?>">
+                    <input type="hidden" name="Node_ID" value="<?php echo $LG_Node_ID; ?>">
+                    <p><span style="font-size:25px" class="bold" > <?php echo $fields['prix_nuit']; ?></span> € par nuit </p>
+                    <div style="margin-top:10px" class="d-flex flex-row justify-content-between">
+                        <div class="d-flex flex-column" style="width:48%">
+                            <label for="debut">Arrivée</label>
+                            <input required type="date" id="debut" name="debut" min="<?php echo date('Y-m-d'); ?>" value="<?php echo $debut ?>" />
+                        </div>
+                        <div class="d-flex flex-column" style="width:48%">
+                            <label for="fin">Départ</label>
+                            <input required type="date" id="fin" name="fin" min="<?php echo date('Y-m-d', strtotime('+1 day')); ?>" value="<?php echo $fin ?>" ?>
+                        </div>
                     </div>
 
-                    <div class="d-flex flex-column" style="width:48%">
-                        <p> Départ </p>
-                        <input type="date" id="fin" name="fin" min="<?php echo date('Y-m-d', strtotime('+1 day')); ?>" value="<?php echo $fin ?>" ?> 
+                    <div class="mt-2 d-flex flex-row justify-content-between">
+                        <label for="nbr_person">Nombre de personnes : </label>
+                        <input required id="nbr_person" name="nbr_person"
+                               type="number"
+                               step="1"
+                               min="0"
+                               max="<?php echo $fields['nombre_personnes'] ?>"
+                               value="<?php echo $fields['nombre_personnes'] ?>"
+                               maxlength="3"
+                               style="width: 4rem;line-height:16px;">
                     </div>
 
-                </div>
+                    <div>
+                        <label for="client">Client</label>
+                        <select id="client" name="client">
+                            <?php
+                            foreach ($client_list as $client){
+                                echo "<option value='".$client['node_ID']."'>".$client["name"]."</option>";
+                            }
+                            ?>
+                        </select>
+                    </div>
 
-                <p style="margin-top:15px" >Nombre de personnes : <?php echo $fields['nombre_personnes'] ?></p>
+                    <button class="button" type="submit">Réserver</button>
+<!--                    <a class="button" href="#"> Réserver </a>-->
 
-                <a class="button" href="#"> Réserver </a>
+                    <p> <?php echo $fields['prix_nuit']; ?>€ x <span id="nombreNuit"> 5 </span> nuits </p>
 
-                <p> <?php echo $fields['prix_nuit']; ?>€ x <span id="nombreNuit"> 5 </span> nuits </p>
-
-                <p style="margin-top:30px;margin-top:10px;font-size:20px" class="bold" id="prix" data-prix="<?php echo $fields['prix_nuit']; ?>"> Prix : <?php echo  $fields['prix_nuit'] ?> € </p>
-
-
+                    <p style="margin-top:30px;margin-top:10px;font-size:20px" class="bold" id="prix" data-prix="<?php echo $fields['prix_nuit']; ?>"> Prix : <?php echo  $fields['prix_nuit'] ?> € </p>
+                </form>
             </div>
 
         </div>

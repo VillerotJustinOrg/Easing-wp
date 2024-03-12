@@ -1,8 +1,5 @@
 <?php
 
-require_once "Proprietaire.php";
-
-
 function Router_logement($post, $post_id, $label, $token_access): void {
     error_log("");
     error_log("===================================================");
@@ -460,8 +457,6 @@ function Visit_3D_Treatment($Visite_ZIP_Data): void
     error_log("file_url: ".print_r($file_url, true));
     error_log("destination: ".print_r($destination, true));
     error_log("====================================================================");
-
-    // TODO unzip
 
     extract_zip($file_url, $destination);
 

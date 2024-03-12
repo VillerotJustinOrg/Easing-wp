@@ -26,10 +26,10 @@ $filtered_terms = wp_list_filter($terms, array('count' => 0), 'NOT');
 
 $is_AI_recomandation = !empty($user_request);
 if (!$is_AI_recomandation){
-    error_log("=====================================================================================================================");
-    error_log("                                                 Filter Without IA");
-    error_log("=====================================================================================================================");
-    error_log("Filter Without IA");
+//    error_log("=====================================================================================================================");
+//    error_log("                                                 Filter Without IA");
+//    error_log("=====================================================================================================================");
+//    error_log("Filter Without IA");
 
     $args = array(
         'post_type'      => 'logement',
@@ -68,7 +68,7 @@ if (!$is_AI_recomandation){
         );
     }
 
-    error_log("Get post filters");
+//    error_log("Get post filters");
     $logements = get_posts($args);
     $list_logements = array();
 
@@ -79,9 +79,9 @@ if (!$is_AI_recomandation){
     }
 
 } else {
-    error_log("=====================================================================================================================");
-    error_log("                                                 Filter With IA");
-    error_log("=====================================================================================================================");
+//    error_log("=====================================================================================================================");
+//    error_log("                                                 Filter With IA");
+//    error_log("=====================================================================================================================");
 
     $token = get_API_Token();
     $token_access = $token["access_token"];
@@ -126,11 +126,11 @@ if (!$is_AI_recomandation){
         $decoded_response = json_decode($response, true);
 
 
-        error_log("==========================================================================================");
-        error_log("==================================== Results =============================================");
-        error_log("==========================================================================================");
+//        error_log("==========================================================================================");
+//        error_log("==================================== Results =============================================");
+//        error_log("==========================================================================================");
 
-        error_log("Number of result: ". $decoded_response['number_of_results']);
+//        error_log("Number of result: ". $decoded_response['number_of_results']);
 
         $results = $decoded_response['result'];
 
@@ -151,7 +151,7 @@ if (!$is_AI_recomandation){
     }
 }
 
-error_log(print_r($logements, true));
+//error_log(print_r($logements, true));
 
 $json_logements = json_encode($list_logements);
 
@@ -171,37 +171,8 @@ $nombre_nuit=$difference->days; ?>
         <?php  $i=0; foreach ($logements as $logement) {
             $logement_id = $is_AI_recomandation ? $logement['ID'] : $logement->ID;
             $fields_logement=get_fields($logement_id);
-            if(!empty($debut)){
-                $lien = get_permalink($logement_id) . "?nombre=$nombre&destination=$destination&debut=$debut&fin=$fin";}
-                
-                else{
-                    // Date actuelle
-                    $dateDebut = new DateTime();
 
-                    // Ajout de 2 mois à la date actuelle
-                    $dateFin = clone $dateDebut;
-                    $dateFin->modify('+2 months');
-
-                    // Conversion en timestamps
-                    $dateDebutTimestamp = $dateDebut->getTimestamp();
-                    $dateFinTimestamp = $dateFin->getTimestamp();
-
-                    // Génération de la première date au hasard dans la plage spécifiée
-                    $dateAleatoire1 = rand($dateDebutTimestamp, $dateFinTimestamp);
-
-                    // Ajout d'une semaine à la première date pour la deuxième date (en secondes)
-                    $dateAleatoire2 = $dateAleatoire1 + 60 * 60 * 24 * 7;
-
-                    // Vérifier si les deux dates sont dans le même mois
-                    while (date('n', $dateAleatoire1) != date('n', $dateAleatoire2)) {
-                        $dateAleatoire1 = rand($dateDebutTimestamp, $dateFinTimestamp);
-                        $dateAleatoire2 = $dateAleatoire1 + 60 * 60 * 24 * 7;
-                    }
-
-                    // Formatage en utilisant strftime pour les mois en français et affichage en une seule ligne
-                    setlocale(LC_TIME, 'fr_FR');
-                    $lien = get_permalink($logement->ID) . "?nombre=$nombre&destination=$destination&debut=" . date('Y-m-d', $dateAleatoire1) . "&fin=" . date('Y-m-d', $dateAleatoire2);
-                }
+            $lien = get_permalink($logement->ID) . "?nombre=$nombre_personne&destination=$destination&debut=";
             ?>
 
             <a id="<?php echo $i ?>" class="card_logement"   style="width:32%" href="<?php echo $lien ?>" target="_blank">
@@ -215,10 +186,6 @@ $nombre_nuit=$difference->days; ?>
                 <div class="informations" >
                 <p class="ville"><?php echo $fields_logement['ville'] ?>, France </p>
                 <p><?php echo $fields_logement['titre'] ?> </p>
-                <p><?php echo $fields_logement['statut'] ?> </p>
-                <?php if(empty($debut)){ ?> 
-                    <p><?php echo strftime("%e – ", $dateAleatoire1) . strftime("%e %b", $dateAleatoire2); ?></p>
-                <?php } ?>
                 <p class="prix"><span class="bold"> <?php echo $fields_logement['prix_nuit'] ?> </span> € par nuit </p>
                 <?php if($nombre_nuit!=0){ ?>
                     <p><span class="bold"><?php echo $fields_logement['prix_nuit']*$nombre_nuit ?></span>€ au total </p>

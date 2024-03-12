@@ -251,7 +251,7 @@ function delete_Node($node_id, $token_access):void {
 
 }
 
-function Delete_All_Relationship($node_id, $token_access)
+function Delete_All_Relationship($node_id, $token_access): void
 {
     // DELETE all RELATIONSHIP
 
