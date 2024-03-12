@@ -39,7 +39,7 @@ $token_access = $token['access_token'];
 
 // Data disponibility
 // Doesn't work I don't know why
-$URL = "http://localhost:8000/q";
+$URL = getenv('API_URL')."/q";
 
 $query = "MATCH (l:logement)-[r:is_located_by]-() ";
 $query.= "WHERE l.ID_Logement = \"$Logement_ID\" ";

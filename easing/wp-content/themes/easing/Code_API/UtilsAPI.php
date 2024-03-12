@@ -1,5 +1,6 @@
 <?php
 
+
 // =======================================================================
 //                             API Connection
 // =======================================================================
@@ -10,9 +11,9 @@ function get_API_Token() {
     error_log("=========================================");
 
     //TODO get login and passwd from .env and api url
-    $login = "admin";
-    $passwd = "admin";
-    $API_URL = "http://localhost:8000";
+    $login = getenv('LOGIN');
+    $passwd = getenv('PASSWD');
+    $API_URL = getenv('API_URL');
     $auth_url = "/auth/token";
 
     $complete_url = $API_URL.$auth_url;

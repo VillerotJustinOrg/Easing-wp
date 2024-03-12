@@ -1,6 +1,6 @@
 <?php
 
-$API_URL = "http://localhost:8000";
+$API_URL = getenv('API_URL');
 
 require_once "Code_API/UtilsAPI.php";
 require_once "Code_API/Logement.php";

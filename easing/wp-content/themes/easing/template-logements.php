@@ -86,7 +86,7 @@ if (!$is_AI_recomandation){
     $token = get_API_Token();
     $token_access = $token["access_token"];
 
-    $URL = "http://localhost:8000/IA/search";
+    $URL = getenv('API_URL')."/IA/search";
 
     $body = array(
         "destination"=>$destination,
