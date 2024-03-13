@@ -1,8 +1,29 @@
 <?php
 // DOT ENV
+// Open the file for reading
+$file = fopen(".env", "r");
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-$dotenv->load();
+// Check if the file is opened successfully
+if ($file) {
+    // Read the file line by line until the end of the file
+    while (($line = fgets($file)) !== false) {
+        // Process each line
+        error_log($line); // You can do whatever you want with the line here
+        putenv($line);
+    }
+
+    // Close the file
+    fclose($file);
+} else {
+    // File couldn't be opened
+    echo "Error: Unable to open the file.";
+}
+
+error_log(print_r(getenv(), true));
+
+error_log("Login: ".getenv('LOGIN'));
+error_log("Password: ".getenv('PASSWD'));
+error_log("URL: ".getenv('API_URL'));
 
 
 /**
