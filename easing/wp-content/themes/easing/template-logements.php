@@ -6,13 +6,23 @@ require_once 'Code_API/UtilsAPI.php';
 
 echo "<main>";
 
+error_log("templ");
+
 //echo "<pre>".print_r($_POST, true)."</pre>";
 
+
+// Default parameters
 $destination=$_POST["destination"];
 $debut=$_POST["debut"];
 $fin=$_POST["fin"];
 $nombre_personne=$_POST["champNombre"];
-$user_request = $_POST["user_request"];
+
+// Advanced parameter
+if (isset($_POST["Min_Price"])) $Min_Price = $_POST["Min_Price"];
+if (isset($_POST["Max_Price"])) $Max_Price = $_POST["Max_Price"];
+if (isset($_POST["Min_Price"])) $pet = $_POST["pet"];
+if (isset($_POST["Min_Price"])) $plain_pied = $_POST["plain-pied"];
+if (isset($_POST["user_request"])) $user_request = $_POST["user_request"];
 
 $taxonomy = 'accessibilite';
 

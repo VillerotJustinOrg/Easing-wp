@@ -1,5 +1,7 @@
 <?php
 
+if (!isset($pet)) $pet = false;
+if (!isset($plain_pied)) $plain_pied = false;
 
 ?>
 
@@ -8,20 +10,20 @@
         <!-- Champ nombre -->
     <div class="d-flex flex-column champ">
         <label class="bold" for="destination">Destination</label>
-        <input type="text" id="destination" name="destination">
+        <input type="text" id="destination" name="destination" value="<?php if (isset($destination)) echo $destination ?>">
     </div>
-    <div class="d-flex flex-column champ">
+    <div class="d-flex flex-column champ"
         <label class="bold" for="debut">Date de début</label>
-        <input type="date" id="debut" name="debut" min="<?php echo date('Y-m-d'); ?>" />
+        <input type="date" id="debut" name="debut" min="<?php echo date('Y-m-d'); ?>" value="<?php if (isset($debut)) echo $debut ?>"/>
     </div>
     <div class="d-flex flex-column champ">
         <label class="bold" for="fin">Date de fin </label>
-        <input type="date" id="fin" name="fin" min="<?php echo date('Y-m-d', strtotime('+1 day')); ?>" ?>
+        <input type="date" id="fin" name="fin" min="<?php echo date('Y-m-d', strtotime('+1 day')); ?>" value="<?php if (isset($fin)) echo $fin ?>" >
     </div>
     <!-- Champ nombre -->
     <div class="d-flex flex-column champ">
         <label class="bold" for="champNombre">Voyageurs</label>
-        <input type="number" id="champNombre" name="champNombre">
+        <input type="number" id="champNombre" name="champNombre" <?php if (isset($nombre_personne)) echo $nombre_personne ?>>
     </div>
 
     <div class="d-flex flex-column champ champ_filtre" style="margin-right:25px">
@@ -52,27 +54,27 @@
             <div class="d-flex flex-raw row justify-content-between">
                 <div class="d-flex flex-column">
                     <label id="Min_Price_Label" name="Min_Price_Label" for="Min_Price">Minimum</label>
-                    <input type="number" min="0.00" step="0.01" name="Min_Price" id="Min_Price">
+                    <input type="number" min="0.00" step="0.01" name="Min_Price" id="Min_Price" value="<?php if (isset($Min_Price)) echo $Min_Price ?>">
                 </div>
                 <div class="d-flex flex-column">
                     <label id="Max_Price_Label" name="Max_Price_Label" for="Max_Price">Maximum</label>
-                    <input type="number" min="0.00" step="0.01" name="Max_Price" id="Max_Price">
+                    <input type="number" min="0.00" step="0.01" name="Max_Price" id="Max_Price" value="<?php if (isset($Max_Price)) echo $Max_Price ?>">
                 </div>
             </div>
 
             <div class="flex-column d-flex justify-content-center" style="margin-bottom: 20px">
                 <h4><label id="pet_label" name="pet" for="pet">Allow pet</label></h4>
-                <input type="checkbox" id="pet" name="pet">
+                <input type="checkbox" id="pet" name="pet" <?php if ($pet) echo "checked" ?>>
             </div>
 
             <div class="flex-row d-flex" style="margin-bottom: 20px">
                 <h4><label id="plain-pied_label" name="plain-pied" for="plain-pied">Plain-pied</label></h4>
-                <input type="checkbox" id="plain-pied" name="plain-pied">
+                <input type="checkbox" id="plain-pied" name="plain-pied" <?php if ($plain_pied) echo "checked" ?>>
             </div>
 
             <div class="flex-column d-flex" style="margin-bottom: 20px">
                 <h4><label id="user_request_label" name="user_request" for="user_request">AI Request</label></h4>
-                <textarea id="user_request" name="user_request"></textarea>
+                <textarea id="user_request" name="user_request"><?php if (isset($user_request)) echo $user_request ?></textarea>
             </div>
         </div>
     </div>

@@ -19,11 +19,11 @@ if ($file) {
     echo "Error: Unable to open the file.";
 }
 
-error_log(print_r(getenv(), true));
-
-error_log("Login: ".getenv('LOGIN'));
-error_log("Password: ".getenv('PASSWD'));
-error_log("URL: ".getenv('API_URL'));
+//error_log(print_r(getenv(), true));
+//
+//error_log("Login: ".getenv('LOGIN'));
+//error_log("Password: ".getenv('PASSWD'));
+//error_log("URL: ".getenv('API_URL'));
 
 
 /**
