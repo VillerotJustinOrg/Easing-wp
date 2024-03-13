@@ -32,7 +32,7 @@ $filtered_terms = wp_list_filter($terms, array('count' => 0), 'NOT'); ?>
 
                 <?php
 
-                    $lien = get_permalink($logement->ID);
+                    $lien = esc_url(get_permalink($logement->ID));
 
                 ?>
 

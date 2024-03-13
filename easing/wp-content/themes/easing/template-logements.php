@@ -186,7 +186,7 @@ $nombre_nuit=$difference->days; ?>
             $logement_id = $is_AI_recomandation ? $logement['ID'] : $logement->ID;
             $fields_logement=get_fields($logement_id);
 
-            $lien = get_permalink($logement->ID) . "?nombre=$nombre_personne&destination=$destination&debut=";
+            $lien = esc_url(get_permalink($logement->ID) . "?nombre=$nombre_personne&destination=$destination");
             ?>
 
             <a id="<?php echo $i ?>" class="card_logement"   style="width:32%" href="<?php echo $lien ?>" target="_blank">
