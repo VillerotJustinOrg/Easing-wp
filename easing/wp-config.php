@@ -8,7 +8,8 @@ if ($file) {
     // Read the file line by line until the end of the file
     while (($line = fgets($file)) !== false) {
         // Process each line
-        error_log($line); // You can do whatever you want with the line here
+//        error_log($line); // You can do whatever you want with the line here
+        $line = rtrim($line, "\r\n");
         putenv($line);
     }
 

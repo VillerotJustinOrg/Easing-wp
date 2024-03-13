@@ -1,4 +1,10 @@
 
+RewriteEngine On
+  ## http -> https
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L,NE,QSA]
+
+
 # BEGIN WordPress
 # Les directives (lignes) entre « BEGIN WordPress » et « END WordPress » sont générées
 # dynamiquement, et doivent être modifiées uniquement via les filtres WordPress.
@@ -12,11 +18,4 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /easing/index.php [L]
 </IfModule>
-
-php_value upload_max_filesize 256M
-php_value post_max_size 512M
-php_value memory_limit 512M
-php_value max_execution_time 300
-php_value max_input_time 300
-
 # END WordPress

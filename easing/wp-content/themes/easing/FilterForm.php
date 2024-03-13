@@ -12,8 +12,8 @@ if (!isset($plain_pied)) $plain_pied = false;
         <label class="bold" for="destination">Destination</label>
         <input type="text" id="destination" name="destination" value="<?php if (isset($destination)) echo $destination ?>">
     </div>
-    <div class="d-flex flex-column champ"
-        <label class="bold" for="debut">Date de début</label>
+    <div class="d-flex flex-column champ">
+        <label class="bold" for="debut">Date de début </label>
         <input type="date" id="debut" name="debut" min="<?php echo date('Y-m-d'); ?>" value="<?php if (isset($debut)) echo $debut ?>"/>
     </div>
     <div class="d-flex flex-column champ">
@@ -23,7 +23,7 @@ if (!isset($plain_pied)) $plain_pied = false;
     <!-- Champ nombre -->
     <div class="d-flex flex-column champ">
         <label class="bold" for="champNombre">Voyageurs</label>
-        <input type="number" id="champNombre" name="champNombre" <?php if (isset($nombre_personne)) echo $nombre_personne ?>>
+        <input type="number" id="champNombre" name="champNombre" value="<?php if (isset($nombre_personne)) echo $nombre_personne ?>">
     </div>
 
     <div class="d-flex flex-column champ champ_filtre" style="margin-right:25px">

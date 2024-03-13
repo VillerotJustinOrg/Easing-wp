@@ -16,6 +16,10 @@ function get_API_Token() {
     $API_URL = getenv('API_URL');
     $auth_url = "/auth/token";
 
+    error_log("|".$login."|");
+    error_log("|".$passwd."|");
+    error_log("|".$API_URL."|");
+
     $complete_url = $API_URL.$auth_url;
 
     // Data to be sent in the request body

@@ -6,8 +6,6 @@ require_once 'Code_API/UtilsAPI.php';
 
 echo "<main>";
 
-error_log("templ");
-
 //echo "<pre>".print_r($_POST, true)."</pre>";
 
 
@@ -20,8 +18,8 @@ $nombre_personne=$_POST["champNombre"];
 // Advanced parameter
 if (isset($_POST["Min_Price"])) $Min_Price = $_POST["Min_Price"];
 if (isset($_POST["Max_Price"])) $Max_Price = $_POST["Max_Price"];
-if (isset($_POST["Min_Price"])) $pet = $_POST["pet"];
-if (isset($_POST["Min_Price"])) $plain_pied = $_POST["plain-pied"];
+if (isset($_POST["pet"])) $pet = $_POST["pet"];
+if (isset($_POST["plain-pied"])) $plain_pied = $_POST["plain-pied"];
 if (isset($_POST["user_request"])) $user_request = $_POST["user_request"];
 
 $taxonomy = 'accessibilite';
@@ -178,7 +176,13 @@ $nombre_nuit=$difference->days; ?>
 <div class="d-flex flex-row" style="min-height: calc(100vh - 60px - 40px - 75px);max-height: calc(100vh - 60px - 40px - 75px)"> 
 
     <div class="liste-logements d-flex"> 
-        <?php  $i=0; foreach ($logements as $logement) {
+        <?php
+        if (count($logements)==0) {
+            echo "Aucun logement ne correspond a vos filtres";
+        }
+
+        $i=0;
+        foreach ($logements as $logement) {
             $logement_id = $is_AI_recomandation ? $logement['ID'] : $logement->ID;
             $fields_logement=get_fields($logement_id);
 
