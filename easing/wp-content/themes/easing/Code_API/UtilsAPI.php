@@ -77,7 +77,7 @@ function add_field_info_to_body($body, $fields)
     error_log("add_field_info_to_body: ".print_r($fields, true));
     $keys = array_keys($fields);
     foreach ($keys as $key){
-        error_log($key.": ".$fields[$key]);
+        error_log($key.": ".print_r($fields[$key]), true);
         if (in_array($key, $special_fields)) {
             continue;
         }
@@ -205,6 +205,10 @@ function update_relationship_between_node($source_node, $target_nodes, $relation
                 $token_access
             );
 
+            if ($relationship_id == -1) {
+                continue;
+            }
+
             $relationship_to_keep[] = $relationship_id;
 
         } else {
@@ -293,6 +297,7 @@ function create_relationship_between_node(
 
     if( is_wp_error( $create_response ) ) {
         error_log("Error");
+        return -1;
     }
 
     error_log("result: ".print_r($create_response, true));

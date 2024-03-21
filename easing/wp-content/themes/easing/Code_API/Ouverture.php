@@ -50,7 +50,7 @@ function get_ouverture_id($ouverture_ID, $token_access){
     error_log("URL: ".$GLOBALS['API_URL'].$ID_url);
 
     $response = wp_remote_get(
-        $GLOBALS['API_URL'].$ID_url."?search_node_property=ID_Ouverture&node_property_value=".urlencode($ouverture_ID), array(
+        $GLOBALS['API_URL'].$ID_url."?search_node_property=ID_Ouvertures&node_property_value=".urlencode($ouverture_ID), array(
             'headers' => array(
                 'Content-Type' => 'application/x-www-form-urlencoded',
                 'Accept' => 'application/json',
@@ -104,7 +104,7 @@ function create_ouverture($post, $post_id, $label, $token_access):void {
 
     $create_url = "/graph/create_node";
 
-    $complete_url = $GLOBALS['API_URL'].$create_url."?label=logement";
+    $complete_url = $GLOBALS['API_URL'].$create_url."?label=".$label;
 
 //    error_log("complete url: ".$complete_url);
 
@@ -115,7 +115,7 @@ function create_ouverture($post, $post_id, $label, $token_access):void {
     }
 
     $create_body = array(
-        'ID_Ouverture'=>$Logement_ID,
+        'ID_'.ucfirst($label)=>$Logement_ID,
         'ID_Post'=>$post_id,
     );
 
@@ -138,6 +138,21 @@ function create_ouverture($post, $post_id, $label, $token_access):void {
     if( is_wp_error( $create_response ) ) {
         error_log("Error");
     }
+
+    // TODO get node id from $create_response
+    $response_body = json_decode($create_response['body'], true);
+    $node_ID = $response_body["node_id"];
+
+    # Adaptation
+    update_relationship(
+        $node_ID,
+        $label,
+        get_field('adaptation', $post_id),
+        'ID_Adaptation',
+        'adaptation',
+        "peut_avoir_une",
+        $token_access
+    );
 
     error_log("result: ".print_r($create_response, true));
     error_log("========================================= Create");
@@ -183,13 +198,13 @@ function update_ouverture($node_ID, $post_id, $label, $token_access):void {
         error_log("Error");
     }
 
-    # Équipements
+    # Adaptation
     update_relationship(
         $node_ID,
-        "ouverture",
+        $label,
         get_field('adaptation', $post_id),
         'ID_Adaptation',
-        'adaptations',
+        'adaptation',
         "peut_avoir_une",
         $token_access
     );

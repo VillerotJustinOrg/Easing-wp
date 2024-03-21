@@ -5,8 +5,9 @@ $API_URL = getenv('API_URL');
 require_once "Code_API/UtilsAPI.php";
 require_once "Code_API/Logement.php";
 require_once "Code_API/Clients.php";
-require_once "Code_API/Equipements_accessibilites.php";
 require_once "Code_API/default_node_type.php";
+require_once "Code_API/Ouverture.php";
+require_once "Code_API/Pieces_Lieux.php";
 
 
 // =======================================================================
@@ -45,10 +46,16 @@ function send_data_to_api_on_post_save($post_id, $post, $update): void {
                 Router_Default($post, $post_id, $post->post_type, $token_access);
                 break;
             case "equipement_access":
-                Router_Equipement_access($post, $post_id, "equipement_access", $token_access);
+                Router_Equipement_access($post, $post_id, $post->post_type, $token_access);
                 break;
             case "logement":
-                Router_logement($post, $post_id, "logement", $token_access);
+                Router_logement($post, $post_id, $post->post_type, $token_access);
+                break;
+            case "piece_lieu":
+                Router_piece($post, $post_id, $post->post_type, $token_access);
+                break;
+            case "ouvertures":
+                Router_ouverture($post, $post_id, $post->post_type, $token_access);
                 break;
             case "acf-field":
                 return;
