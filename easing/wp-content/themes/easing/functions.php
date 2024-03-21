@@ -50,6 +50,10 @@ function send_data_to_api_on_post_save($post_id, $post, $update): void {
             case "logement":
                 Router_logement($post, $post_id, "logement", $token_access);
                 break;
+            case "acf-field":
+                return;
+            case "acf-field-group":
+                return;
         }
     }
     error_log("");

@@ -118,6 +118,62 @@ function add_field_info_to_body($body, $fields)
     return $body;
 }
 
+function update_relationship($source_node_ID, $source_label, $info_targets, $target_id_label, $target_label, $relationship_type, $token_access): void{
+    error_log("---------------------------");
+    error_log("Source_node_ID: ".$source_node_ID);
+    error_log("Objects to connect to: ".print_r($info_targets, true));
+    error_log("object_id_label: ".$target_id_label);
+    error_log("Relationship Type: ".$relationship_type);
+    error_log("---------------------------");
+
+    // GET Node ID of the room
+
+    if (!$info_targets){
+        error_log("No object to connect to");
+        return;
+    }
+
+    $target_nodes = array();
+
+    $ID_url = "/graph/read_node_collection";
+    error_log("URL: ".$GLOBALS['API_URL'].$ID_url);
+    foreach ($info_targets as $object_to_connect){
+        $target_id = $object_to_connect->post_title;
+        error_log("Target ID: ".$target_id);
+        $response = wp_remote_get(
+            $GLOBALS['API_URL'].$ID_url."?search_node_property=".urlencode($target_id_label)."&node_property_value=".urlencode($target_id),
+            array(
+                'headers' => array(
+                    'Content-Type' => 'application/x-www-form-urlencoded',
+                    'Accept' => 'application/json',
+                    'Authorization' => 'bearer '.$token_access
+                ),
+            )
+        );
+
+        if( is_wp_error( $response ) ) {
+            error_log("Error");
+        }
+
+
+        error_log(print_r($response, true));
+
+        $nodes = json_decode($response['body'], true)['nodes'];
+
+
+        if (count($nodes)){
+            $target_node_ID = $nodes[0]['node_id'];
+
+            // Create Relationship is_in between the equipment and the room
+
+            $target_nodes[] = array("ID"=>$target_node_ID, "Label"=>$target_label);
+        }
+    }
+
+    $source_node = array("ID"=>$source_node_ID, "Label"=>$source_label);
+
+    update_relationship_between_node($source_node, $target_nodes, $relationship_type, $token_access);
+}
 
 function update_relationship_between_node($source_node, $target_nodes, $relationship_type, $token_access): void
 {

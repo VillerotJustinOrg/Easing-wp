@@ -41,16 +41,7 @@ if (!isset($plain_pied)) $plain_pied = false;
             <p class="croix_filtre" > + </p>
             <h3 style="margin-bottom:25px">Filtres Avancées</h3>
 
-            <h4 style="text-align:center;padding-top:20px;"><label id="type_place_label" name="type_place" for="type_place">Type of place</label></h4>
-            <div class="flex-column d-flex" style="margin-bottom: 20px">
-                <div class="d-flex flex-raw row">
-                    <?php
-                    // TODO select type place
-                    ?>
-                </div>
-            </div>
-
-            <h4 style="text-align:center;padding-top:20px;">Price Range</h4>
+            <h4 style="text-align:center;padding-top:20px;">Fourchette de prix</h4>
             <div class="d-flex flex-raw row justify-content-between">
                 <div class="d-flex flex-column">
                     <label id="Min_Price_Label" name="Min_Price_Label" for="Min_Price">Minimum</label>
@@ -62,20 +53,85 @@ if (!isset($plain_pied)) $plain_pied = false;
                 </div>
             </div>
 
-            <div class="flex-column d-flex justify-content-center" style="margin-bottom: 20px">
-                <h4><label id="pet_label" name="pet" for="pet">Allow pet</label></h4>
-                <input type="checkbox" id="pet" name="pet" <?php if ($pet) echo "checked" ?>>
+            <h4 style="text-align:center;padding-top:20px;">
+                <label id="type_label" for="type">Type de réservation</label>
+            </h4>
+            <select id="type">
+                <option value="Logement entier">Logement entier</option>
+                <option value="Chambre">Chambre</option>
+            </select>
+
+            <div class="row d-flex flex-row mt-5">
+                <div class="col-6 d-flex flex-column justify-content-center">
+                    <h4 style="text-align:center;">
+                        <label id="reservation_auto_label" for="reservation_auto">
+                            Réservation automatique
+                        </label>
+                    </h4>
+                    <input type="checkbox" id="reservation_auto" name="reservation_auto">
+                </div>
+                <div class="col-6 d-flex flex-column justify-content-center">
+                    <h4 style="text-align:center;">
+                        <label id="arrive_auto_label" for="arrive_auto">
+                            Arrivée autonome
+                        </label>
+                    </h4>
+                    <input type="checkbox" id="arrive_auto" name="arrive_auto">
+                </div>
             </div>
 
-            <div class="flex-row d-flex" style="margin-bottom: 20px">
-                <h4><label id="plain-pied_label" name="plain-pied" for="plain-pied">Plain-pied</label></h4>
-                <input type="checkbox" id="plain-pied" name="plain-pied" <?php if ($plain_pied) echo "checked" ?>>
+            <h4 style="text-align:center;padding-top:20px;">
+                <label id="type_label" for="type">Catégories de logement</label>
+            </h4>
+            <select id="type">
+                <option value="Maison">Maison</option>
+                <option value="Appartement">Appartement</option>
+                <option value="Gîtes & Maison d'hôtes">Gîtes & Maison d'hôtes</option>
+                <option value="Hébergements insolites & alternatifs">Hébergements insolites & alternatifs</option>
+            </select>
+
+            <h4 style="text-align:center;padding-top:20px;">Pièces et couchages</h4>
+            <div class="flex-row d-flex justify-content-between" style="margin-bottom: 20px">
+                <h6>
+                    <label id="nbr_chambre_label" for="nbr_chambre">
+                        Chambre
+                    </label>
+                </h6>
+                <input type="number" id="nbr_chambre" name="nbr_chambre" min="0" step="1" value="0">
             </div>
 
-            <div class="flex-column d-flex" style="margin-bottom: 20px">
-                <h4><label id="user_request_label" name="user_request" for="user_request">AI Request</label></h4>
-                <textarea id="user_request" name="user_request"><?php if (isset($user_request)) echo $user_request ?></textarea>
+            <div class="flex-row d-flex justify-content-between" style="margin-bottom: 20px">
+                <h6>
+                    <label id="nbr_salle_bain_label" for="nbr_salle_bain">
+                        Salles de bain
+                    </label>
+                </h6>
+                <input type="number" id="nbr_salle_bain" name="nbr_salle_bain" min="1" step="1" value="1">
             </div>
+
+            <div class="flex-row d-flex justify-content-between" style="margin-bottom: 20px">
+                <h6>
+                    <label id="nbr_lits_label" for="nbr_lits">
+                        Lits & Couchages
+                    </label>
+                </h6>
+                <input type="number" id="nbr_lits" name="nbr_lits" min="1" step="1" value="1">
+            </div>
+
+            <h4 style="text-align:center;padding-top:20px;">
+                <label id="type_label" for="type">Équipements</label>
+            </h4>
+            <div class="flex-row d-flex" style="margin-bottom:20px">
+                Work In Progress
+            </div>
+
+            <h4 style="text-align:center;padding-top:20px;">
+                <label id="type_label" for="type">Adaptations et éléments d’accessibilité</label>
+            </h4>
+            <div class="flex-row d-flex" style="margin-bottom:20px">
+                Work In Progress
+            </div>
+
         </div>
     </div>
 </form>

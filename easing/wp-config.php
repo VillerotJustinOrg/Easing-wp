@@ -1,24 +1,50 @@
 <?php
+
+// Get the current directory
+$currentDirectory = dirname(__FILE__);
+
+// Get just the directory name
+$directoryName = basename($currentDirectory);
+
+// Output the directory name
+error_log("Current directory name: " . $directoryName);
+
+
+
 // DOT ENV
-// Open the file for reading
-$file = fopen(".env", "r");
+// Define the file path
+$dotenvFilePath = __DIR__ . '/.env';
 
-// Check if the file is opened successfully
-if ($file) {
-    // Read the file line by line until the end of the file
-    while (($line = fgets($file)) !== false) {
-        // Process each line
-//        error_log($line); // You can do whatever you want with the line here
-        $line = rtrim($line, "\r\n");
-        putenv($line);
+// Check if the file exists
+if (file_exists($dotenvFilePath)) {
+    // Attempt to open the file for reading
+    $file = @fopen($dotenvFilePath, "r");
+
+    // Check if the file is opened successfully
+    if ($file) {
+        // Read the file line by line until the end of the file
+        while (($line = fgets($file)) !== false) {
+            // Remove any trailing newline characters
+            $line = rtrim($line, "\r\n");
+
+            // Set the environment variable
+            putenv($line);
+        }
+
+        // Close the file
+        fclose($file);
+
+        // Log success message
+        error_log("DOTENV Loaded");
+    } else {
+        // Log error message if unable to open the file
+        error_log("Error: Unable to open the .env file.");
     }
-
-    // Close the file
-    fclose($file);
 } else {
-    // File couldn't be opened
-    echo "Error: Unable to open the file.";
+    // Log error message if the .env file does not exist
+    error_log("Error: .env file not found.");
 }
+
 
 //error_log(print_r(getenv(), true));
 //

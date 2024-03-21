@@ -12,7 +12,13 @@ if (isset($_POST['ID_Logement'])){
 
 $fields=get_fields();
 $post = get_post();
-//error_log(print_r($fields, true));
+error_log("==============================================================================================");
+error_log("==============================================================================================");
+error_log("==============================================================================================");
+error_log(print_r($fields, true));
+error_log("==============================================================================================");
+error_log("==============================================================================================");
+error_log("==============================================================================================");
 
 $nombre = $_GET["nombre"];
 $destination = $_GET["destination"];
@@ -40,24 +46,24 @@ $token_access = $token['access_token'];
 // Data disponibility
 // Doesn't work I don't know why
 $URL = getenv('API_URL')."/q";
-
-$query = "MATCH (l:logement)-[r:is_located_by]-() ";
-$query.= "WHERE l.ID_Logement = \"$Logement_ID\" ";
-$query.= "RETURN r;";
-
-//$query = "MATCH (l:logement)-[r:is_located_by]-() WHERE l.ID_Logement = \"Logement 1\" RETURN r;";
-
-$body = array(
-        "cypher_string" => $query
-);
-
+//
+//$query = "MATCH (l:logement)-[r:is_located_by]-() ";
+//$query.= "WHERE l.ID_Logement = \"$Logement_ID\" ";
+//$query.= "RETURN r;";
+//
+////$query = "MATCH (l:logement)-[r:is_located_by]-() WHERE l.ID_Logement = \"Logement 1\" RETURN r;";
+//
+//$body = array(
+//        "cypher_string" => $query
+//);
+//
 $header = array(
     'Content-Type'=>'application/json',
     'Accept' => 'application/json',
     'Authorization' => 'bearer '.$token_access
 );
 
-$response = request($body, $header, $URL, 'POST');
+//$response = request($body, $header, $URL, 'POST');
 
 error_log("Response: ".print_r($response, true));
 //error_log("thingy: ".print_r($response['response']['response'][0]['r'][1], true));
@@ -128,7 +134,15 @@ $lien = get_permalink($post->ID);
 
         <div class="d-flex flex-row justify-content-between" style="margin-top:30px;position:relative"> 
 
-            <div style="width:65%"> 
+            <div style="width:65%">
+                <h2 class="bold"> Adresse </h2>
+                <p>
+                    <?php echo $fields['adresse']; ?>
+                    <?php echo $fields['ville']; ?>
+                    <?php echo $fields['code_postal']; ?>
+                    <?php echo $fields['region']; ?>
+                </p>
+
                 <h2 class="bold"> Description </h2>
                 <p><?php echo $fields['description']; ?> </p>     
                 
@@ -154,19 +168,22 @@ $lien = get_permalink($post->ID);
                 
                 <div class="line"> </div>
 
-                <h2 class="bold"> Équipements d'accessibilité </h2>
+                <h2 class="bold"> Pièces </h2>
                 <?php
-                $adaptations = $fields['equipements_daccessibilite'];
+                $pieces = $fields['pieces'];
 
-                foreach ($adaptations AS $adaptation) {
+                foreach ($pieces AS $piece) {
 
-                    $adaptation_fields = get_fields($adaptation->ID);
+                    $piece_fields = get_fields($piece->ID);
 //                    echo "<pre>".print_r($adaptation_fields, true)."</pre>";
-                    echo "<div class='my-3'>";
-                    echo "<h4>" . $adaptation_fields['nom'] . "</h4>";
-                    echo "<p class='mb-2'>Type de piece: " . $adaptation_fields['type_de_piece'][0]->post_title . "</p>";
-                    echo "<p>" . $adaptation_fields['description'] . "</p>";
-                    echo "</div>";
+
+                    // Recover all equipment of the room
+                    //TODO
+
+                    // Recover all adaptation of the room
+                    //TODO
+
+                    // Recover all opening of the room
                 }
 
 //                echo "<pre>".print_r($adaptations, true)."</pre>";
@@ -175,88 +192,22 @@ $lien = get_permalink($post->ID);
                 <!-- TODO $fields['equipements_daccessibilite'] -->
 
                 <div class="line"> </div>
-
-                <h2 class="bold"> Service de proximité </h2>
-                <?php
-                $service_proximites = $fields['services_de_proximite'];
-
-                foreach ($service_proximites AS $service_proximite) {
-
-                    $service_fields = get_fields($service_proximite->ID);
-//                    echo "<pre>".print_r($adaptation_fields, true)."</pre>";
-                    echo "<div class='my-3'>";
-                    echo "<h4>" . $service_fields['nom'] . "</h4>";
-                    echo "<p>" . $service_fields['description'] . "</p>";
-                    echo "</div>";
-                }
-//                echo "<pre>".print_r($adaptations, true)."</pre>";
-
-                ?>
-                <!-- TODO $fields['services_de_proximite'] -->
+                TODO
+                [acceptation] => Instantanée
+                [etage] => Étage intermédiaire
+                [superficie] => 30
+                [accepte_enfant] =>
+                [accepte_bebe] =>
+                [type_reservation] => Logement entier
+                [effets_personnels] =>
+                [nombre_lits_simples] => 1
+                [nombre_lits_doubles] => 2
+                [type_habitation] => Maison
+                [pieces] =>
+                [equipements] =>
+                [adaptations] =>
 
                 <div class="line"> </div>
-
-                <h2 class="bold"> Restrictions </h2>
-                <?php
-                $objects = $fields['restrictions'];
-
-                foreach ($objects AS $object) {
-
-                    $object_fields = get_fields($object->ID);
-//                    echo "<pre>".print_r($adaptation_fields, true)."</pre>";
-                    echo "<div class='my-3'>";
-                    echo "<h4>" . $object_fields['nom'] . "</h4>";
-                    echo "<p>" . $object_fields['description'] . "</p>";
-                    echo "</div>";
-                }
-
-//                echo "<pre>".print_r($adaptations, true)."</pre>";
-
-                ?>
-                <!-- TODO $fields['restrictions'] -->
-
-                <div class="line"> </div>
-
-                <h2 class="bold"> Service domotique </h2>
-                <?php
-                $objects = $fields['services_domotique'];
-
-                foreach ($objects AS $object) {
-
-                    $object_fields = get_fields($object->ID);
-//                    echo "<pre>".print_r($adaptation_fields, true)."</pre>";
-                    echo "<div class='my-3'>";
-                    echo "<h4>" . $object_fields['nom'] . "</h4>";
-                    echo "<p>" . $object_fields['description'] . "</p>";
-                    echo "</div>";
-                }
-
-                //echo "<pre>".print_r($adaptations, true)."</pre>";
-
-                ?>
-                <!-- TODO $fields['services_domotique'] -->
-
-                <div class="line"> </div>
-
-                <h2 class="bold"> Équipements domotique </h2>
-                <?php
-                $objects = $fields['equipements_domotique'];
-
-                foreach ($objects AS $object) {
-
-                    $object_fields = get_fields($object->ID);
-//                    echo "<pre>".print_r($adaptation_fields, true)."</pre>";
-                    echo "<div class='my-3'>";
-                    echo "<h4>" . $object_fields['nom'] . "</h4>";
-                    echo "<p>" . $object_fields['description'] . "</p>";
-                    echo "</div>";
-                }
-
-                //echo "<pre>".print_r($adaptations, true)."</pre>";
-
-                ?>
-                <!-- TODO $fields['equipements_domotique'] -->
-
 
             </div>
 
@@ -265,7 +216,7 @@ $lien = get_permalink($post->ID);
                     <input type="hidden" name="ID_Logement" value="<?php echo $post->post_title; ?>">
                     <input type="hidden" name="ID_Post" value="<?php echo $post->ID; ?>">
                     <input type="hidden" name="Node_ID" value="<?php echo $LG_Node_ID; ?>">
-                    <p><span style="font-size:25px" class="bold" > <?php echo $fields['prix_nuit']; ?></span> € par nuit </p>
+                    <p><span style="font-size:25px" class="bold" > <?php echo $fields['prix_nuitee']; ?></span> € par nuit </p>
                     <div style="margin-top:10px" class="d-flex flex-row justify-content-between">
                         <div class="d-flex flex-column" style="width:48%">
                             <label for="debut">Arrivée</label>
@@ -303,9 +254,9 @@ $lien = get_permalink($post->ID);
                     <button class="button" type="submit">Réserver</button>
 <!--                    <a class="button" href="#"> Réserver </a>-->
 
-                    <p> <?php echo $fields['prix_nuit']; ?>€ x <span id="nombreNuit"> 5 </span> nuits </p>
+                    <p> <?php echo $fields['prix_nuitee']; ?>€ x <span id="nombreNuit"> 5 </span> nuits </p>
 
-                    <p style="margin-top:30px;margin-top:10px;font-size:20px" class="bold" id="prix" data-prix="<?php echo $fields['prix_nuit']; ?>"> Prix : <?php echo  $fields['prix_nuit'] ?> € </p>
+                    <p style="margin-top:30px;margin-top:10px;font-size:20px" class="bold" id="prix" data-prix="<?php echo $fields['prix_nuitee']; ?>"> Prix : <?php echo  $fields['prix_nuitee'] ?> € </p>
                 </form>
             </div>
 
@@ -317,7 +268,9 @@ $lien = get_permalink($post->ID);
 
         <div  id="map-log" data-logements='<?php echo htmlspecialchars($json_data, ENT_QUOTES, 'UTF-8'); ?>' style="width:100%; height:400px;margin-top:60px;margin-bottom:90px"></div>
 
-
+        <div class="grand_line"> </div>
+        <h3 class="bold"> Propriétaire </h3>
+        [proprietaire] => TODO
     </div>
 </main>
 

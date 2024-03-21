@@ -1,35 +1,35 @@
 <?php
 
-function Router_logement($post, $post_id, $label, $token_access): void {
+function Router_piece($post, $post_id, $label, $token_access): void {
     error_log("");
     error_log("===================================================");
-    error_log("              Router Logement");
+    error_log("              Router Piece Lieu");
     error_log("===================================================");
     error_log("");
 
     $Post_Status = $post->post_status;
 
-    $Logement_ID = $post->post_title;
-    $node_ID = get_logement_id($Logement_ID, $token_access);
+    $Piece_ID = $post->post_title;
+    $node_ID = get_piece_id($Piece_ID, $token_access);
 
     error_log("===================================");
     error_log("              Info");
     error_log("Post Status: ".$Post_Status);
     error_log("Label: ".$label);
-    error_log("Logement_ID: ".$Logement_ID);
+    error_log("Piece_ID: ".$Piece_ID);
     error_log("Node ID: ".$node_ID);
     error_log("===================================");
     error_log("");
 
 
     if ($node_ID < 1) {
-        create_logement($post, $post_id, $label, $token_access);
+        create_piece($post, $post_id, $label, $token_access);
     }
     else {
         if ($Post_Status == "publish"){
-            update_logement($node_ID, $post_id, $label, $token_access);
+            update_piece($node_ID, $post_id, $label, $token_access);
         } elseif ($Post_Status == "trash") {
-            delete_logement($node_ID, $token_access, $label);
+            delete_piece($node_ID, $token_access, $label);
         } else {
             // If you want to do something on draft
             error_log("Draft");
@@ -37,12 +37,12 @@ function Router_logement($post, $post_id, $label, $token_access): void {
     }
 }
 
-function get_logement_id($Logement_ID, $token_access){
+function get_piece_id($Piece_ID, $token_access){
     error_log("");
     error_log("=========================================");
-    error_log("              Get Logement ID");
+    error_log("              Get Piece ID");
     error_log("=========================================");
-    error_log("ID: ".$Logement_ID);
+    error_log("ID: ".$Piece_ID);
     error_log("token: ".$token_access);
 
     $ID_url = "/graph/read_node_collection";
@@ -50,7 +50,7 @@ function get_logement_id($Logement_ID, $token_access){
     error_log("URL: ".$GLOBALS['API_URL'].$ID_url);
 
     $response = wp_remote_get(
-        $GLOBALS['API_URL'].$ID_url."?search_node_property=ID_Logement&node_property_value=".urlencode($Logement_ID), array(
+        $GLOBALS['API_URL'].$ID_url."?search_node_property=ID_Piece&node_property_value=".urlencode($Piece_ID), array(
             'headers' => array(
                 'Content-Type' => 'application/x-www-form-urlencoded',
                 'Accept' => 'application/json',
@@ -65,20 +65,20 @@ function get_logement_id($Logement_ID, $token_access){
 
 //    error_log(print_r($response, true));
 
-    $logements = json_decode($response['body'], true);
+    $pieces = json_decode($response['body'], true);
 
 
-    if (count($logements['nodes']) > 0) {
-        $logement = $logements['nodes'][0];
-        $node_ID = $logement['node_id'];
+    if (count($pieces['nodes']) > 0) {
+        $piece = $pieces['nodes'][0];
+        $node_ID = $piece['node_id'];
 
-        error_log("========================================= Get Logement ID");
+        error_log("========================================= Get Piece ID");
         error_log("");
         error_log("");
 
         return $node_ID;
     } else {
-        error_log("========================================= Get Logement ID");
+        error_log("========================================= Get Piece ID");
         error_log("");
         error_log("");
 
@@ -87,15 +87,15 @@ function get_logement_id($Logement_ID, $token_access){
 
 }
 
-function create_logement($post, $post_id, $label, $token_access):void {
+function create_piece($post, $post_id, $label, $token_access):void {
     error_log("");
     error_log("=========================================");
-    error_log("              Create logement");
+    error_log("              Create Piece");
     error_log("=========================================");
     error_log("post_id: ".$post_id);
     error_log("label: ".$label);
     error_log("token: ".$token_access);
-    error_log("Logement_ID: ".$post->post_title);
+    error_log("Piece_ID: ".$post->post_title);
     $Logement_ID = $post->post_title;
 
     // =================================================================================================================
@@ -115,7 +115,7 @@ function create_logement($post, $post_id, $label, $token_access):void {
     }
 
     $create_body = array(
-        'ID_Logement'=>$Logement_ID,
+        'ID_Piece'=>$Logement_ID,
         'ID_Post'=>$post_id,
     );
 
@@ -145,10 +145,10 @@ function create_logement($post, $post_id, $label, $token_access):void {
     error_log("");
 }
 
-function update_logement($node_ID, $post_id, $label, $token_access):void {
+function update_piece($node_ID, $post_id, $label, $token_access):void {
     error_log("");
     error_log("=====================================");
-    error_log("            Edit logement");
+    error_log("            Edit Piece");
     error_log("=====================================");
 
     // =================================================================================================================
@@ -183,36 +183,51 @@ function update_logement($node_ID, $post_id, $label, $token_access):void {
         error_log("Error");
     }
 
-    //TODO Relationship
+    # Équipements
+    update_relationship(
+        $node_ID,
+        "piece",
+        get_field('equipements', $post_id),
+        'ID_Equipement',
+        'equipements',
+        "equipement_p",
+        $token_access
+    );
 
-    # Restriction
-//    update_relationship(
-//        $node_ID,
-//        get_field('restrictions', $post_id),
-//        'ID_Restriction',
-//        'restriction',
-//        "forbidden",
-//        $token_access
-//    );
+    # Adaptations
+    update_relationship(
+        $node_ID,
+        "piece",
+        get_field('adaptations', $post_id),
+        'ID_Adaptation',
+        'adaptations',
+        'adaptation_p',
+        $token_access
+    );
 
-
-    // Logement 3D Visit
-    $Visite_ZIP_Data = get_field('3D_Visit', $post_id);
-    Visit_3D_Treatment($Visite_ZIP_Data, $token_access);
-
+    # Ouvertures
+    update_relationship(
+        $node_ID,
+        "piece",
+        get_field('ouvertures', $post_id),
+        'ID_Ouvertures',
+        'ouvertures',
+        'has_ouvertures',
+        $token_access
+    );
 
 //    error_log('fields: '.print_r(get_fields($post_id), true));
 
 //    error_log("result: ".print_r($update_response, true));
-    error_log("========================================= Edit Logement");
+    error_log("========================================= Edit Piece");
     error_log("");
     error_log("");
 }
 
-function delete_logement($node_id, $token_access):void {
+function delete_piece($node_id, $token_access):void {
     error_log("");
     error_log("=========================================");
-    error_log("              Delete Logement");
+    error_log("              Delete Piece");
     error_log("=========================================");
 
     // Delete all relationship linked to the logement
@@ -235,7 +250,7 @@ function delete_logement($node_id, $token_access):void {
     }
 
 
-    // Delete the logement
+    // Delete the room
 
     $complete_url = $GLOBALS['API_URL']."/graph/delete/".$node_id;
 
@@ -264,18 +279,12 @@ function delete_logement($node_id, $token_access):void {
 
 }
 
-function add_field_to_logement_body($create_body, $fields): array
+function add_field_to_piece_body($create_body, $fields): array
 {
     $field_to_skip = array(
-        "equipements_domotique",
-        "services_domotique",
-        "equipements_daccessibilite",
-        "services_de_proximite",
-        "restrictions",
-        "type_de_propriete",
-        "propretaire",
-        "contient_pieces",
-        "test_file"
+        "equipements",
+        "adaptations",
+        "ouvertures"
     );
     error_log(print_r($fields, true));
     $keys = array_keys($fields);
@@ -317,80 +326,4 @@ function add_field_to_logement_body($create_body, $fields): array
     }
 
     return $create_body;
-}
-
-function Visit_3D_Treatment($Visite_ZIP_Data): void
-{
-    error_log("====================================================================");
-    error_log("                         Visit 3D Treatment");
-    error_log("====================================================================");
-    if ($Visite_ZIP_Data == null) return;
-    error_log("Visite_ZIP_Data: ".print_r($Visite_ZIP_Data, true));
-    $file_url = wp_get_attachment_url($Visite_ZIP_Data['ID'] );
-    $root = $_SERVER["DOCUMENT_ROOT"];
-    $destination = $root.'/easing/wp-content/themes/easing/3D_Visits/'.$Visite_ZIP_Data['ID'];
-    error_log("file_url: ".print_r($file_url, true));
-    error_log("destination: ".print_r($destination, true));
-    error_log("====================================================================");
-
-    extract_zip($file_url, $destination);
-
-}
-
-function extract_zip($zipUrl, $extractPath): bool
-{
-    // Create Directory if didn't exist
-    create_directory($extractPath);
-
-    // Get the ZIP file contents
-    $zipContents = file_get_contents($zipUrl);
-
-    if ($zipContents !== false) {
-        // Create a temporary file to store the ZIP contents
-        $tempFile = tempnam(sys_get_temp_dir(), 'zip');
-
-        // Write the ZIP contents to the temporary file
-        file_put_contents($tempFile, $zipContents);
-
-        // Create a new ZipArchive instance
-        $zip = new ZipArchive();
-
-        // Open the temporary file
-        if ($zip->open($tempFile) === true) {
-            // Extract the contents to the specified directory
-            $zip->extractTo($extractPath);
-
-            // Close the ZipArchive
-            $zip->close();
-
-            error_log('ZIP file extracted successfully.');
-            // Clean up: delete the temporary file
-            unlink($tempFile);
-            return true;
-        } else {
-            // Clean up: delete the temporary file
-            unlink($tempFile);
-            error_log('Failed to open the ZIP file.');
-            return false;
-        }
-    } else {
-        error_log('Failed to retrieve ZIP file from URL.');
-        return false;
-    }
-}
-
-function create_directory($directory): void
-{
-    // Check if the directory doesn't exist already
-    if (!file_exists($directory)) {
-        // Create the directory
-        error_log($directory);
-        if (mkdir($directory, 0755, true)) {
-            error_log("Directory created successfully.");
-        } else {
-            error_log("Failed to create directory.");
-        }
-    } else {
-        error_log("Directory already exists.");
-    }
 }
