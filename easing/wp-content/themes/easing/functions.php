@@ -8,6 +8,7 @@ require_once "Code_API/Clients.php";
 require_once "Code_API/default_node_type.php";
 require_once "Code_API/Ouverture.php";
 require_once "Code_API/Pieces_Lieux.php";
+require_once "Code_API/Caracteristiques.php";
 
 
 // =======================================================================
@@ -56,6 +57,9 @@ function send_data_to_api_on_post_save($post_id, $post, $update): void {
                 break;
             case "ouvertures":
                 Router_ouverture($post, $post_id, $post->post_type, $token_access);
+                break;
+            case "caracteristique":
+                Router_caracteristique($post, $post_id, $post->post_type, $token_access);
                 break;
             case "acf-field":
                 return;

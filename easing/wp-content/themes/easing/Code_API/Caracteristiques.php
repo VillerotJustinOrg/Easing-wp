@@ -1,35 +1,35 @@
 <?php
 
-function Router_piece($post, $post_id, $label, $token_access): void {
+function Router_caracteristique($post, $post_id, $label, $token_access): void {
     error_log("");
     error_log("===================================================");
-    error_log("              Router Piece Lieu");
+    error_log("              Router caracteristique Lieu");
     error_log("===================================================");
     error_log("");
 
     $Post_Status = $post->post_status;
 
-    $Piece_ID = $post->post_title;
-    $node_ID = get_piece_id($Piece_ID, $label, $token_access);
+    $caracteristique_ID = $post->post_title;
+    $node_ID = get_caracteristique_id($caracteristique_ID, $token_access);
 
     error_log("===================================");
     error_log("              Info");
     error_log("Post Status: ".$Post_Status);
     error_log("Label: ".$label);
-    error_log("Piece_ID: ".$Piece_ID);
+    error_log("Caracteristique_ID: ".$caracteristique_ID);
     error_log("Node ID: ".$node_ID);
     error_log("===================================");
     error_log("");
 
 
     if ($node_ID < 1) {
-        create_piece($post, $post_id, $label, $token_access);
+        create_caracteristique($post, $post_id, $label, $token_access);
     }
     else {
         if ($Post_Status == "publish"){
-            update_piece($node_ID, $post_id, $label, $token_access);
+            update_caracteristique($node_ID, $post_id, $label, $token_access);
         } elseif ($Post_Status == "trash") {
-            delete_piece($node_ID, $token_access, $label);
+            delete_caracteristique($node_ID, $token_access, $label);
         } else {
             // If you want to do something on draft
             error_log("Draft");
@@ -37,22 +37,20 @@ function Router_piece($post, $post_id, $label, $token_access): void {
     }
 }
 
-function get_piece_id($Piece_ID, $label, $token_access){
+function get_caracteristique_id($caracteristique_ID, $token_access){
     error_log("");
     error_log("=========================================");
-    error_log("              Get Piece ID");
+    error_log("              Get caracteristique ID");
     error_log("=========================================");
-    error_log("ID: ".$Piece_ID);
+    error_log("ID: ".$caracteristique_ID);
     error_log("token: ".$token_access);
 
     $ID_url = "/graph/read_node_collection";
 
     error_log("URL: ".$GLOBALS['API_URL'].$ID_url);
 
-    $search_node_property = "ID_".ucfirst($label);
-
     $response = wp_remote_get(
-        $GLOBALS['API_URL'].$ID_url."?search_node_property=".$search_node_property."&node_property_value=".urlencode($Piece_ID), array(
+        $GLOBALS['API_URL'].$ID_url."?search_node_property=ID_Caracteristique&node_property_value=".urlencode($caracteristique_ID), array(
             'headers' => array(
                 'Content-Type' => 'application/x-www-form-urlencoded',
                 'Accept' => 'application/json',
@@ -67,20 +65,20 @@ function get_piece_id($Piece_ID, $label, $token_access){
 
 //    error_log(print_r($response, true));
 
-    $pieces = json_decode($response['body'], true);
+    $caracteristiques = json_decode($response['body'], true);
 
 
-    if (count($pieces['nodes']) > 0) {
-        $piece = $pieces['nodes'][0];
-        $node_ID = $piece['node_id'];
+    if (count($caracteristiques['nodes']) > 0) {
+        $caracteristique = $caracteristiques['nodes'][0];
+        $node_ID = $caracteristique['node_id'];
 
-        error_log("========================================= Get Piece ID");
+        error_log("========================================= Get caracteristique ID");
         error_log("");
         error_log("");
 
         return $node_ID;
     } else {
-        error_log("========================================= Get Piece ID");
+        error_log("========================================= Get caracteristique ID");
         error_log("");
         error_log("");
 
@@ -89,15 +87,15 @@ function get_piece_id($Piece_ID, $label, $token_access){
 
 }
 
-function create_piece($post, $post_id, $label, $token_access):void {
+function create_caracteristique($post, $post_id, $label, $token_access):void {
     error_log("");
     error_log("=========================================");
-    error_log("              Create Piece");
+    error_log("              Create caracteristique");
     error_log("=========================================");
     error_log("post_id: ".$post_id);
     error_log("label: ".$label);
     error_log("token: ".$token_access);
-    error_log("Piece_ID: ".$post->post_title);
+    error_log("Caracteristique_ID: ".$post->post_title);
     $Logement_ID = $post->post_title;
 
     // =================================================================================================================
@@ -122,9 +120,8 @@ function create_piece($post, $post_id, $label, $token_access):void {
     );
 
     $field_to_skip = array(
-        "equipements",
-        "adaptations",
-        "ouvertures"
+        "adaptation",
+        "equipements"
     );
 
     $create_body = body_builder($create_body, $fields, $field_to_skip);
@@ -147,16 +144,42 @@ function create_piece($post, $post_id, $label, $token_access):void {
         error_log("Error");
     }
 
+    // TODO get node id from $create_response
+    $response_body = json_decode($create_response['body'], true);
+    $node_ID = $response_body["node_id"];
+
+    # Adaptation
+    update_relationship(
+        $node_ID,
+        $label,
+        get_field('adaptation', $post_id),
+        'ID_Adaptation',
+        'adaptation',
+        "access_adaptation",
+        $token_access
+    );
+
+    # Equipements
+    update_relationship(
+        $node_ID,
+        $label,
+        get_field('equipements', $post_id),
+        'ID_Equipements',
+        'equipements',
+        "include",
+        $token_access
+    );
+
     error_log("result: ".print_r($create_response, true));
     error_log("========================================= Create");
     error_log("");
     error_log("");
 }
 
-function update_piece($node_ID, $post_id, $label, $token_access):void {
+function update_caracteristique($node_ID, $post_id, $label, $token_access):void {
     error_log("");
     error_log("=====================================");
-    error_log("            Edit Piece");
+    error_log("            Edit caracteristique");
     error_log("=====================================");
 
     // =================================================================================================================
@@ -172,9 +195,8 @@ function update_piece($node_ID, $post_id, $label, $token_access):void {
     );
 
     $field_to_skip = array(
-        "equipements",
-        "adaptations",
-        "ouvertures"
+        "adaptation",
+        "equipements"
     );
 
     $update_body = body_builder($update_body, $fields, $field_to_skip);
@@ -197,51 +219,40 @@ function update_piece($node_ID, $post_id, $label, $token_access):void {
         error_log("Error");
     }
 
-    # Équipements
+    # Adaptation
+    update_relationship(
+        $node_ID,
+        $label,
+        get_field('adaptation', $post_id),
+        'ID_Adaptation',
+        'adaptation',
+        "access_adaptation",
+        $token_access
+    );
+
+    # Equipment
     update_relationship(
         $node_ID,
         $label,
         get_field('equipements', $post_id),
-        'ID_Equipement',
+        'ID_Equipements',
         'equipements',
-        "equipement_p",
-        $token_access
-    );
-
-    # Adaptations
-    update_relationship(
-        $node_ID,
-        $label,
-        get_field('adaptations', $post_id),
-        'ID_Adaptation',
-        'adaptation',
-        'adaptation_p',
-        $token_access
-    );
-
-    # Ouvertures
-    update_relationship(
-        $node_ID,
-        $label,
-        get_field('ouvertures', $post_id),
-        'ID_Ouvertures',
-        'ouvertures',
-        'has_ouvertures',
+        "include",
         $token_access
     );
 
 //    error_log('fields: '.print_r(get_fields($post_id), true));
 
 //    error_log("result: ".print_r($update_response, true));
-    error_log("========================================= Edit Piece");
+    error_log("========================================= Edit caracteristique");
     error_log("");
     error_log("");
 }
 
-function delete_piece($node_id, $token_access):void {
+function delete_caracteristique($node_id, $token_access):void {
     error_log("");
     error_log("=========================================");
-    error_log("              Delete Piece");
+    error_log("              Delete caracteristique");
     error_log("=========================================");
 
     // Delete all relationship linked to the logement
@@ -264,7 +275,7 @@ function delete_piece($node_id, $token_access):void {
     }
 
 
-    // Delete the room
+    // Delete the opening
 
     $complete_url = $GLOBALS['API_URL']."/graph/delete/".$node_id;
 
@@ -292,5 +303,3 @@ function delete_piece($node_id, $token_access):void {
     error_log("");
 
 }
-
-

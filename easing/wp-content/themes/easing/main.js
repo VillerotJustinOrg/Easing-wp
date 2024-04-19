@@ -383,5 +383,14 @@ $('#debut, #fin').change(calculerNombreJours);
 
 calculerNombreJours();
 
+$("div > .editable").popover({
+    html: true,
+    sanitize: false
+});
 
 
+// changer_voyageur
+
+$( ".changer_voyageur" ).on( "change", function() {
+    console.log( "Change form nbr voyageur." );
+} );

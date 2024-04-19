@@ -1,0 +1,167 @@
+{
+    "Accès extérieur": {
+        "Interphone": false,
+        "Ascenseur": false,
+        "Entrée privée": false
+    },
+    "Accès intérieur": {
+        "Rangements": false,
+        "Porte-manteaux": false,
+        "Meuble à chaussures": false
+    },
+    "Parking": {
+        "Stationnement gratuit à proximité": false,
+        "Stationnement payant à proximité": false,
+        "Stationnement gratuit sur place": false,
+        "Stationnement payant sur place": false,
+        "Stationnement PMR disponible": false,
+        "Garage": false,
+        "Borne de recharge pour véhicules électriques": false
+    },
+    "Installations extérieures": {
+        "Arrière-cour": false,
+        "Piscine": false,
+        "Jacuzzi": false,
+        "Jardin": false,
+        "Terrasse": false,
+        "Patio ou balcon": false,
+        "Espace repas en plein air": false,
+        "Cuisine extérieure": false,
+        "Appareil de cuisson d’extérieur (barbecue, brasero, four d'extérieur, etc…)": false,
+        "Mobilier d'extérieur": false
+    },
+    "Chambre et linge": {
+        "Draps": false,
+        "Espace de rangement pour les vêtements": false,
+        "Fer à repasser": false,
+        "Moustiquaire": false,
+        "Oreillers et couvertures supplémentaires": false,
+        "Stores": false,
+        "Étendoir à linge": false,
+        "Télévision": false,
+        "Cintres": false,
+        "Table de nuit": false
+    },
+    "Salle de bain": {
+        "Eau chaude": false,
+        "Baignoire": false,
+        "Douche": false,
+        "Bidet": false,
+        "Toilette séparée": false,
+        "Toilette": false,
+        "Lave-linge": false,
+        "Sèche-linge": false,
+        "Serviettes": false,
+        "Sèche-cheveux": false,
+        "Sèche-serviette": false,
+        "Savon": false,
+        "Shampoing": false,
+        "Savon ou gel douche": false,
+        "Produits de nettoyage": false,
+        "Distributeur de produit": false
+    },
+    "Chauffage et climatisation": {
+        "Chauffage centralisé": {
+            "Radiateurs": false,
+            "Plancher": false,
+            "Mur chauffant": false
+        },
+        "Chauffage local ou d’appoint": {
+            "Radiateur": false,
+            "Poêle à bois": false,
+            "Poêle à granules": false,
+            "Cheminée": false
+        },
+        "Climatisation": false,
+        "Ventilateur de plafond": false,
+        "Ventilateurs portables": false
+    },
+    "Salon séjour": {
+        "Télévision": false,
+        "Télécommande": false,
+        "Canapé": false,
+        "Canapé d'angle": false,
+        "Fauteuil": false,
+        "Pouf poire": false,
+        "Pouf": false,
+        "Table basse": false,
+        "Tapis": false,
+        "Chaine Hi-Fi": false
+    },
+    "Cuisine et salle à manger": {
+        "Cuisine": false,
+        "Kitchenette": false,
+        "Distributeur de produit": false,
+        "Table à manger": false,
+        "Cuisinière": false,
+        "Plaques de cuisson": false,
+        "Four": false,
+        "Four à micro-ondes": false,
+        "Cuiseur à riz": false,
+        "Vaisselle et couverts": false,
+        "Ustensiles de cuisine": false,
+        "Lave-vaisselle": false,
+        "Congélateur": false,
+        "Réfrigérateur": false,
+        "Mini réfrigérateur": false,
+        "Blender": false,
+        "Robot-mixeur": false,
+        "Bouilloire": false,
+        "Cafetière": false,
+        "Epicerie sèche (thé, café, sel, sucre, poivre, etc…)": false,
+        "Grille-pain": false,
+        "Machine à pain": false,
+        "Ustensiles de barbecue": false,
+        "Compacteur de déchets": false
+    },
+    "Loisirs et détente": {
+        "Bibliothèque ou collection de livres": false,
+        "Piano ou instruments de musique": false,
+        "Pièce à thème": false,
+        "Système audio": false,
+        "Tourne disque": false,
+        "Vidéoprojecteur ou cinéma": false,
+        "Appareils de fitness": false,
+        "Billard": false,
+        "Babyfoot": false,
+        "Table de ping-pong": false,
+        "Console de jeu": false,
+        "Jeux d'arcade": false,
+        "Jeux de société": false,
+        "Livres et jouets pour enfants": false,
+        "Salle de jeux pour enfants": false
+    },
+    "Espaces communs": {
+        "Espace de travail dédié": false,
+        "Connexion Ethernet": false,
+        "Wifi": false,
+        "Répéteur Wifi": false,
+        "Produits d'entretien": false,
+        "Balai": false,
+        "Aspirateur central": false,
+        "Aspirateur": false
+    },
+    "Enfants et bébés": {
+        "Aire de jeux extérieure": false,
+        "Babyphone": false,
+        "Baignoire pour bébés": false,
+        "Chaise haute": false,
+        "Lit parapluie": false,
+        "Lit pour bébé": false,
+        "Table à langer": false,
+        "Vaisselle pour enfants": false
+    },
+    "Sécurité à la maison": {
+        "Détecteur de fumée": false,
+        "Détecteur de monoxyde de carbone": false,
+        "Extincteur": false,
+        "Kit de premiers secours": false,
+        "Barrières de sécurité pour bébé": false,
+        "Cache-prises": false,
+        "Pare-feu pour la cheminée (si « Cheminée » sélectionné)": false,
+        "Protections sur les coins de tables": false,
+        "Protections sur les fenêtres": false,
+        "Dispositif d’alerte classique": false,
+        "Dispositif d’alerte domotique": false
+    }
+}

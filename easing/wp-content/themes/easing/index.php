@@ -48,7 +48,7 @@ $filtered_terms = wp_list_filter($terms, array('count' => 0), 'NOT'); ?>
                     <p class="ville"><?php echo $fields_logement['ville'] ?>, France </p>
                     <p><?php echo $fields_logement['titre'] ?> </p>
 <!--                    <p>--><?php //echo $fields_logement['statut'] ?><!-- </p>-->
-                    <p class="prix"><span class="bold"> <?php echo $fields_logement['prix_nuit'] ?> </span> € par nuit </p>
+                    <p class="prix"><span class="bold"> <?php echo $fields_logement['prix_nuitee'] ?> </span> € par nuit </p>
                     <div class="coeur" > </div>
                    </div>
 

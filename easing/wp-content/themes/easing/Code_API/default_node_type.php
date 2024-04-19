@@ -149,7 +149,7 @@ function create_Node($post, $post_id, $label, $token_access, $fields):void {
         'ID_Post'=>$post_id
     );
 
-    $create_body= add_field_info_to_body($create_body, $fields);
+    $create_body= body_builder($create_body, $fields, array());
 
     $update_header = array(
         'Content-Type' => 'application/json',
@@ -190,7 +190,7 @@ function update_Node($node_ID, $post_id, $token_access):void {
 
     $update_body = array('ID_Post'=>$post_id);
 
-    $update_body= add_field_info_to_body($update_body, get_fields($post_id));
+    $update_body= body_builder($update_body, get_fields($post_id), array());
 
     $update_header = array(
         'Content-Type' => 'application/json',

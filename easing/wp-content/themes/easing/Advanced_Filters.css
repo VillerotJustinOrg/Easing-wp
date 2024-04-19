@@ -1,0 +1,200 @@
+/* Filtre avancé tab*/
+
+    /* Variables pour la charte graphique */
+
+:root {
+    --main-font: Arial, sans-serif;
+    --primary-color: #4c2dd6;
+    /* Couleur de base */
+    --primary-light1: #8d7ec6;
+    /* Violet pastel */
+    --primary-light2: #a99ad6;
+    /* Lavande pastel */
+    --primary-light3: #bfb0e2;
+    /* Mauve pastel */
+    --primary-light4: #d6c1eb;
+    /* Lilas pastel */
+    --text-color: #000;
+    /* Noir */
+    --background-color: #cfcfcf;
+    --researchButton-color: white;
+    --tabActiveColor: white;
+    /* Blanc */
+    --overlay-color: rgb(247 247 247);
+    --neutral-color: #c0c0c0;
+    --border-radius: 10px;
+    --button-hover-backgroundColor: green;
+    --button-hover-color: white;
+    --checkbox-size: 15px;
+    --checkbox-border-color: #ccc;
+    --activeTabBackgroundColor: grey;
+}
+
+
+/* Styles pour les onglets */
+
+.dialog-box #formRech {
+    font-family: var(--main-font);
+}
+
+.dialog-box .tab {
+    position: fixed;
+    color: white;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1;
+    background-color: var(--background-color);
+    max-height: 40px;
+    overflow-y: clip;
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+}
+
+.dialog-box .tablinks {
+    border-radius: var(--border-radius);
+}
+
+.dialog-box .tab-content-container {
+    border-radius: var(--border-radius) !important;
+}
+
+.dialog-box .tabcontent {
+    margin-top: 40px;
+}
+
+.dialog-box .tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: background-color 0.3s;
+    font-size: 16px;
+    color: var(--text-color);
+}
+
+.dialog-box .tab button:hover {
+    background-color: var(--neutral-color);
+}
+
+.dialog-box .tab button.active {
+    background-color: var(--activeTabBackgroundColor);
+    color: var(--tabActiveColor);
+}
+
+
+/* Style pour les cases à cocher */
+
+.dialog-box input[type="checkbox"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: var(--checkbox-size);
+    height: var(--checkbox-size);
+    border: 1px solid var(--checkbox-border-color);
+    border-radius: 3px;
+    background-color: #fff;
+    display: inline-block;
+    vertical-align: middle;
+    position: relative;
+    cursor: pointer;
+}
+
+
+/* Style pour la case à cocher cochée */
+
+.dialog-box input[type="checkbox"]:checked::before {
+    content: "\2713";
+    font-size: 12px;
+    color: var(--primary-color);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+
+/* Styles pour les conteneurs des cases à cocher et leur texte */
+
+.dialog-box label {
+    display: inline-block;
+    padding: 5px 10px;
+    border: 1px solid var(--neutral-color);
+    border-radius: 5px;
+}
+
+.dialog-box label:hover {
+    background-color: var(--primary-light1);
+}
+
+
+/* Styles pour le bouton d'envoi du formulaire */
+
+.dialog-box #searchForm {
+    position: relative;
+}
+
+.dialog-box #submitBtn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 3px;
+    padding: 7px 30px;
+    background-color: var(--primary-color);
+    color: var(--researchButton-color);
+    border: none;
+    border-radius: var(--border-radius);
+    font-family: var(--main-font);
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    z-index: 100;
+}
+
+.dialog-box #submitBtn:hover {
+    background-color: var(--button-hover-backgroundColor);
+    color: var(--button-hover-color);
+}
+
+
+/* Style pour la boîte de dialogue */
+
+
+/* .dialog-box h2 {
+    margin-top: -30px;
+} */
+
+.dialog-box {
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--overlay-color);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    color: var(--text-color);
+    z-index: 1000;
+    padding-top: 30px;
+}
+
+.dialog-box .dialog-content {
+    width: 800px;
+    height: 600px;
+    overflow-y: auto;
+}
+
+.dialog-box .dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--overlay-color);
+    z-index: 999;
+}
+
+.dialog-box .dialog-content li {
+    line-height: 1.5;
+}

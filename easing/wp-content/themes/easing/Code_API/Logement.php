@@ -1,25 +1,25 @@
 <?php
 
 function Router_logement($post, $post_id, $label, $token_access): void {
-    error_log("");
-    error_log("===================================================");
-    error_log("              Router Logement");
-    error_log("===================================================");
-    error_log("");
+    //error_log("");
+    //error_log("===================================================");
+    //error_log("              Router Logement");
+    //error_log("===================================================");
+    //error_log("");
 
     $Post_Status = $post->post_status;
 
     $Logement_ID = $post->post_title;
     $node_ID = get_logement_id($Logement_ID, $token_access);
 
-    error_log("===================================");
-    error_log("              Info");
-    error_log("Post Status: ".$Post_Status);
-    error_log("Label: ".$label);
-    error_log("Logement_ID: ".$Logement_ID);
-    error_log("Node ID: ".$node_ID);
-    error_log("===================================");
-    error_log("");
+    //error_log("===================================");
+    //error_log("              Info");
+    //error_log("Post Status: ".$Post_Status);
+    //error_log("Label: ".$label);
+    //error_log("Logement_ID: ".$Logement_ID);
+    //error_log("Node ID: ".$node_ID);
+    //error_log("===================================");
+    //error_log("");
 
 
     if ($node_ID < 1) {
@@ -32,22 +32,22 @@ function Router_logement($post, $post_id, $label, $token_access): void {
             delete_logement($node_ID, $token_access, $label);
         } else {
             // If you want to do something on draft
-            error_log("Draft");
+            //error_log("Draft");
         }
     }
 }
 
 function get_logement_id($Logement_ID, $token_access){
-    error_log("");
-    error_log("=========================================");
-    error_log("              Get Logement ID");
-    error_log("=========================================");
-    error_log("ID: ".$Logement_ID);
-    error_log("token: ".$token_access);
+    //error_log("");
+    //error_log("=========================================");
+    //error_log("              Get Logement ID");
+    //error_log("=========================================");
+    //error_log("ID: ".$Logement_ID);
+    //error_log("token: ".$token_access);
 
     $ID_url = "/graph/read_node_collection";
 
-    error_log("URL: ".$GLOBALS['API_URL'].$ID_url);
+    //error_log("URL: ".$GLOBALS['API_URL'].$ID_url);
 
     $response = wp_remote_get(
         $GLOBALS['API_URL'].$ID_url."?search_node_property=ID_Logement&node_property_value=".urlencode($Logement_ID), array(
@@ -60,10 +60,10 @@ function get_logement_id($Logement_ID, $token_access){
     );
 
     if( is_wp_error( $response ) ) {
-        error_log("Error");
+        //error_log("Error");
     }
 
-//    error_log(print_r($response, true));
+//    //error_log(print_r($response, true));
 
     $logements = json_decode($response['body'], true);
 
@@ -72,15 +72,15 @@ function get_logement_id($Logement_ID, $token_access){
         $logement = $logements['nodes'][0];
         $node_ID = $logement['node_id'];
 
-        error_log("========================================= Get Logement ID");
-        error_log("");
-        error_log("");
+        //error_log("========================================= Get Logement ID");
+        //error_log("");
+        //error_log("");
 
         return $node_ID;
     } else {
-        error_log("========================================= Get Logement ID");
-        error_log("");
-        error_log("");
+        //error_log("========================================= Get Logement ID");
+        //error_log("");
+        //error_log("");
 
         return -1;
     }
@@ -88,14 +88,14 @@ function get_logement_id($Logement_ID, $token_access){
 }
 
 function create_logement($post, $post_id, $label, $token_access):void {
-    error_log("");
-    error_log("=========================================");
-    error_log("              Create logement");
-    error_log("=========================================");
-    error_log("post_id: ".$post_id);
-    error_log("label: ".$label);
-    error_log("token: ".$token_access);
-    error_log("Logement_ID: ".$post->post_title);
+    //error_log("");
+    //error_log("=========================================");
+    //error_log("              Create logement");
+    //error_log("=========================================");
+    //error_log("post_id: ".$post_id);
+    //error_log("label: ".$label);
+    //error_log("token: ".$token_access);
+    //error_log("Logement_ID: ".$post->post_title);
     $Logement_ID = $post->post_title;
 
     // =================================================================================================================
@@ -106,10 +106,10 @@ function create_logement($post, $post_id, $label, $token_access):void {
 
     $complete_url = $GLOBALS['API_URL'].$create_url."?label=logement";
 
-//    error_log("complete url: ".$complete_url);
+//    //error_log("complete url: ".$complete_url);
 
     $fields = get_fields($post_id);
-    error_log(print_r($fields, true));
+    //error_log(print_r($fields, true));
     if (gettype($fields) != "array") {
         return;
     }
@@ -119,7 +119,27 @@ function create_logement($post, $post_id, $label, $token_access):void {
         'ID_Post'=>$post_id,
     );
 
-    $create_body = add_field_to_piece_body($create_body, $fields);
+    $field_to_skip = array(
+        "proprietaire",
+        "adaptations",
+        "equipements",
+        "piece_lieu",
+        "caracteristiques"
+    );
+
+    $create_body = body_builder($create_body, $fields, $field_to_skip);
+
+    if (!isset($create_body["accepte_enfant"])) {
+        $create_body["accepte_enfant"] = false;
+    }
+
+    if (!isset($create_body["accepte_bebe"])) {
+        $create_body["accepte_bebe"] = false;
+    }
+
+    if (!isset($create_body["effets_personnels"])) {
+        $create_body["effets_personnels"] = false;
+    }
 
     $update_header = array(
         'Content-Type' => 'application/json',
@@ -139,17 +159,75 @@ function create_logement($post, $post_id, $label, $token_access):void {
         error_log("Error");
     }
 
-    error_log("result: ".print_r($create_response, true));
-    error_log("========================================= Create");
-    error_log("");
-    error_log("");
+    $response_body = json_decode($create_response['body'], true);
+    $node_ID = $response_body["node_id"];
+
+    # Pièces
+    update_relationship(
+        $node_ID,
+        $label,
+        get_field('pieces', $post_id),
+        'ID_Piece_lieu',
+        'piece_lieu',
+        "has_piece_lieu",
+        $token_access
+    );
+
+    # Équipements
+    update_relationship(
+        $node_ID,
+        $label,
+        get_field('equipements', $post_id),
+        'ID_Equipements',
+        'equipements',
+        "has_equipements",
+        $token_access
+    );
+
+    # Adaptations
+    update_relationship(
+        $node_ID,
+        $label,
+        get_field('adaptations', $post_id),
+        'ID_Adaptation',
+        'adaptation',
+        "has_adaptations",
+        $token_access
+    );
+
+    # Propriétaire
+    update_relationship(
+        $node_ID,
+        $label,
+        get_field('proprietaire', $post_id),
+        'ID_Proprietaire',
+        'proprietaire',
+        "owned_by",
+        $token_access
+    );
+
+    # Characteristics
+    update_relationship(
+        $node_ID,
+        $label,
+        get_field('caracteristiques', $post_id),
+        'ID_Caracteristique',
+        'caracteristique',
+        "owned_by",
+        $token_access
+    );
+
+    //error_log("result: ".print_r($create_response, true));
+    //error_log("========================================= Create");
+    //error_log("");
+    //error_log("");
 }
 
 function update_logement($node_ID, $post_id, $label, $token_access):void {
-    error_log("");
-    error_log("=====================================");
-    error_log("            Edit logement");
-    error_log("=====================================");
+    //error_log("");
+    //error_log("=====================================");
+    //error_log("            Edit logement");
+    //error_log("=====================================");
 
     // =================================================================================================================
     //                                                  Update Request
@@ -163,7 +241,27 @@ function update_logement($node_ID, $post_id, $label, $token_access):void {
         'ID_Post'=>$post_id
     );
 
-    $update_body = add_field_to_piece_body($update_body, $fields);
+    $field_to_skip = array(
+        "proprietaire",
+        "adaptations",
+        "equipements",
+        "piece_lieu",
+        "caracteristiques"
+    );
+
+    $update_body = body_builder($update_body, $fields, $field_to_skip);
+
+    if (!isset($update_body["accepte_enfant"])) {
+        $update_body["accepte_enfant"] = false;
+    }
+
+    if (!isset($update_body["accepte_bebe"])) {
+        $update_body["accepte_bebe"] = false;
+    }
+
+    if (!isset($update_body["effets_personnels"])) {
+        $update_body["effets_personnels"] = false;
+    }
 
     $update_header = array(
         'Content-Type' => 'application/json',
@@ -183,17 +281,60 @@ function update_logement($node_ID, $post_id, $label, $token_access):void {
         error_log("Error");
     }
 
-    //TODO Relationship
+    # Pièces
+    update_relationship(
+        $node_ID,
+        $label,
+        get_field('pieces', $post_id),
+        'ID_Piece_lieu',
+        'piece_lieu',
+        "has_piece_lieu",
+        $token_access
+    );
 
-    # Restriction
-//    update_relationship(
-//        $node_ID,
-//        get_field('restrictions', $post_id),
-//        'ID_Restriction',
-//        'restriction',
-//        "forbidden",
-//        $token_access
-//    );
+    # Équipements
+    update_relationship(
+        $node_ID,
+        $label,
+        get_field('equipements', $post_id),
+        'ID_Equipements',
+        'equipements',
+        "has_equipements",
+        $token_access
+    );
+
+    # Adaptations
+    update_relationship(
+        $node_ID,
+        $label,
+        get_field('adaptations', $post_id),
+        'ID_Adaptation',
+        'adaptation',
+        "has_adaptations",
+        $token_access
+    );
+
+    # Propriétaire
+    update_relationship(
+        $node_ID,
+        $label,
+        get_field('proprietaire', $post_id),
+        'ID_Proprietaire',
+        'proprietaire',
+        "Owned_by",
+        $token_access
+    );
+
+    # Characteristics
+    update_relationship(
+        $node_ID,
+        $label,
+        get_field('caracteristiques', $post_id),
+        'ID_Caracteristique',
+        'caracteristique',
+        "has_caracteristiques",
+        $token_access
+    );
 
 
     // Logement 3D Visit
@@ -201,19 +342,19 @@ function update_logement($node_ID, $post_id, $label, $token_access):void {
     Visit_3D_Treatment($Visite_ZIP_Data, $token_access);
 
 
-//    error_log('fields: '.print_r(get_fields($post_id), true));
+//    //error_log('fields: '.print_r(get_fields($post_id), true));
 
-//    error_log("result: ".print_r($update_response, true));
-    error_log("========================================= Edit Logement");
-    error_log("");
-    error_log("");
+//    //error_log("result: ".print_r($update_response, true));
+    //error_log("========================================= Edit Logement");
+    //error_log("");
+    //error_log("");
 }
 
 function delete_logement($node_id, $token_access):void {
-    error_log("");
-    error_log("=========================================");
-    error_log("              Delete Logement");
-    error_log("=========================================");
+    //error_log("");
+    //error_log("=========================================");
+    //error_log("              Delete Logement");
+    //error_log("=========================================");
 
     // Delete all relationship linked to the logement
     $DEL_All_R_URL = "/graph/delete_all_relationship/$node_id";
@@ -231,7 +372,7 @@ function delete_logement($node_id, $token_access):void {
 
     $relationship_response = wp_remote_request( $GLOBALS['API_URL'].$DEL_All_R_URL, $args);
     if( is_wp_error($relationship_response) ) {
-        error_log("Error");
+        //error_log("Error");
     }
 
 
@@ -253,85 +394,30 @@ function delete_logement($node_id, $token_access):void {
     $delete_response = wp_remote_request($complete_url, $args);
 
     if( is_wp_error($delete_response) ) {
-        error_log("Error");
+        //error_log("Error");
     }
 
-    error_log("Delete Result: ".print_r(json_decode($delete_response['body'], true), true));
+    //error_log("Delete Result: ".print_r(json_decode($delete_response['body'], true), true));
 
-    error_log("========================================= Delete");
-    error_log("");
-    error_log("");
+    //error_log("========================================= Delete");
+    //error_log("");
+    //error_log("");
 
-}
-
-function add_field_to_logement_body($create_body, $fields): array
-{
-    $field_to_skip = array(
-        "equipements_domotique",
-        "services_domotique",
-        "equipements_daccessibilite",
-        "services_de_proximite",
-        "restrictions",
-        "type_de_propriete",
-        "propretaire",
-        "contient_pieces",
-        "test_file"
-    );
-    error_log(print_r($fields, true));
-    $keys = array_keys($fields);
-    foreach ($keys AS $key){
-        error_log($key.": ".print_r($fields[$key], true));
-        if (!in_array($key, $field_to_skip)){
-            if (gettype($fields[$key]) == "array") {
-                $array_body = array();
-                $array = $fields[$key];
-                foreach ($array as $object) {
-                    if (gettype($object) == "string" OR
-                        gettype($object) == "boolean" OR
-                        gettype($object) == "integer" OR
-                        gettype($object) == "double"){
-                        $array_body[] = $object;
-                    }
-                    elseif (in_array("url", array_keys($array))){ // Easy array
-                        $image_url = $object['url'];
-                        $array_body[] = $image_url;
-                    } else { // Need to find a string
-                        $SUB_KEYS = array_keys($object);
-                        $valid_key = "";
-                        foreach ($SUB_KEYS as $SUB_KEY){
-                            if (gettype($object[$SUB_KEY]) == "string" OR
-                                gettype($object[$SUB_KEY]) == "boolean" OR
-                                gettype($object[$SUB_KEY]) == "integer" OR
-                                gettype($object[$SUB_KEY]) == "double"){
-                                $valid_key = $SUB_KEY;
-                            }
-                        }
-                        $array_body[] = $object[$valid_key];
-                    }
-                }
-                $body[$key] = $array_body;
-            } else {
-                $body[$key] = $fields[$key];
-            }
-        }
-    }
-
-    return $create_body;
 }
 
 function Visit_3D_Treatment($Visite_ZIP_Data): void
 {
-    error_log("====================================================================");
-    error_log("                         Visit 3D Treatment");
-    error_log("====================================================================");
+    //error_log("====================================================================");
+    //error_log("                         Visit 3D Treatment");
+    //error_log("====================================================================");
     if ($Visite_ZIP_Data == null) return;
-    error_log("Visite_ZIP_Data: ".print_r($Visite_ZIP_Data, true));
+    //error_log("Visite_ZIP_Data: ".print_r($Visite_ZIP_Data, true));
     $file_url = wp_get_attachment_url($Visite_ZIP_Data['ID'] );
     $root = $_SERVER["DOCUMENT_ROOT"];
     $destination = $root.'/easing/wp-content/themes/easing/3D_Visits/'.$Visite_ZIP_Data['ID'];
-    error_log("file_url: ".print_r($file_url, true));
-    error_log("destination: ".print_r($destination, true));
-    error_log("====================================================================");
+    //error_log("file_url: ".print_r($file_url, true));
+    //error_log("destination: ".print_r($destination, true));
+    //error_log("====================================================================");
 
     extract_zip($file_url, $destination);
 
@@ -363,18 +449,18 @@ function extract_zip($zipUrl, $extractPath): bool
             // Close the ZipArchive
             $zip->close();
 
-            error_log('ZIP file extracted successfully.');
+            //error_log('ZIP file extracted successfully.');
             // Clean up: delete the temporary file
             unlink($tempFile);
             return true;
         } else {
             // Clean up: delete the temporary file
             unlink($tempFile);
-            error_log('Failed to open the ZIP file.');
+            //error_log('Failed to open the ZIP file.');
             return false;
         }
     } else {
-        error_log('Failed to retrieve ZIP file from URL.');
+        //error_log('Failed to retrieve ZIP file from URL.');
         return false;
     }
 }
@@ -384,13 +470,13 @@ function create_directory($directory): void
     // Check if the directory doesn't exist already
     if (!file_exists($directory)) {
         // Create the directory
-        error_log($directory);
+        //error_log($directory);
         if (mkdir($directory, 0755, true)) {
-            error_log("Directory created successfully.");
+            //error_log("Directory created successfully.");
         } else {
-            error_log("Failed to create directory.");
+            //error_log("Failed to create directory.");
         }
     } else {
-        error_log("Directory already exists.");
+        //error_log("Directory already exists.");
     }
 }

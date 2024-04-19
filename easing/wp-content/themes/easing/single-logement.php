@@ -1,29 +1,18 @@
-
 <?php
 require_once 'header.php';
 require_once 'Code_API/UtilsAPI.php';
 require_once 'reservation-treatment.php';
 
-if (isset($_POST['ID_Logement'])){
-//    Create location
-    treatment($_POST);
-}
-
 
 $fields=get_fields();
 $post = get_post();
-error_log("==============================================================================================");
-error_log("==============================================================================================");
-error_log("==============================================================================================");
-error_log(print_r($fields, true));
-error_log("==============================================================================================");
-error_log("==============================================================================================");
-error_log("==============================================================================================");
-
-$nombre = $_GET["nombre"];
-$destination = $_GET["destination"];
-$debut = $_GET["debut"];
-$fin = $_GET["fin"];
+//error_log("==============================================================================================");
+//error_log("==============================================================================================");
+//error_log("==============================================================================================");
+//error_log(print_r($fields, true));
+//error_log("==============================================================================================");
+//error_log("==============================================================================================");
+//error_log("==============================================================================================");
 
 //<!--<pre style="display:none">--><?php //print_r($fields) <!--<!-- </pre>-->-->
 
@@ -47,15 +36,15 @@ $token_access = $token['access_token'];
 // Doesn't work I don't know why
 $URL = getenv('API_URL')."/q";
 //
-//$query = "MATCH (l:logement)-[r:is_located_by]-() ";
-//$query.= "WHERE l.ID_Logement = \"$Logement_ID\" ";
-//$query.= "RETURN r;";
+$query = "MATCH (l:logement)-[r:is_located_by]-() ";
+$query.= "WHERE l.ID_Logement = \"$Logement_ID\" ";
+$query.= "RETURN r;";
 //
 ////$query = "MATCH (l:logement)-[r:is_located_by]-() WHERE l.ID_Logement = \"Logement 1\" RETURN r;";
 //
-//$body = array(
-//        "cypher_string" => $query
-//);
+$body = array(
+        "cypher_string" => $query
+);
 //
 $header = array(
     'Content-Type'=>'application/json',
@@ -63,10 +52,17 @@ $header = array(
     'Authorization' => 'bearer '.$token_access
 );
 
+$args = array(
+    'headers' => $header,
+    'body' => json_encode($body),
+    'method' => 'POST'
+);
+
+$response = wp_remote_post($URL, $args);
 //$response = request($body, $header, $URL, 'POST');
 
 error_log("Response: ".print_r($response, true));
-//error_log("thingy: ".print_r($response['response']['response'][0]['r'][1], true));
+//error_log("thingy: ".print_r($response['response'][0]['r'][1], true));
 
 // Visit URL
 $visite = $fields['3D_Visit'];
@@ -123,7 +119,7 @@ $lien = get_permalink($post->ID);
 
                 <?php if($i==3){ ?> 
                     <a target=”_blank” href="<?php echo get_bloginfo('template_url'); ?>/3D_Visits/<?php echo $visite_URL ?>/Maison.html" style="position:relative;background-size:cover;background-position:center center;background-image: url(<?php echo $photo['url'] ?>);" class="case-<?php echo $i ?>">
-                        <img class="img-360" src="<?php echo get_bloginfo('template_url'); ?>/img/360.svg" >
+                        <img alt="IMG-360" class="img-360" src="<?php echo get_bloginfo('template_url'); ?>/img/360.svg" >
                     </a>
                 <?php } ?>
 
@@ -169,43 +165,152 @@ $lien = get_permalink($post->ID);
                 <div class="line"> </div>
 
                 <h2 class="bold"> Pièces </h2>
-                <?php
-                $pieces = $fields['pieces'];
 
-                foreach ($pieces AS $piece) {
+                <div class="tabs">
 
-                    $piece_fields = get_fields($piece->ID);
-//                    echo "<pre>".print_r($adaptation_fields, true)."</pre>";
+                    <?php
+                    $pieces = $fields['pieces'];
 
-                    // Recover all equipment of the room
-                    //TODO
+                    $tab_registers = "";
+                    $tab_bodies = "";
+                    $count = 0;
 
-                    // Recover all adaptation of the room
-                    //TODO
+                    foreach ($pieces AS $piece) {
 
-                    // Recover all opening of the room
-                }
+                        $piece_fields = get_fields($piece->ID);
+//                    echo "<pre>".print_r($piece_fields, true)."</pre>";
 
-//                echo "<pre>".print_r($adaptations, true)."</pre>";
+                        $tab_registers.= "<button ";
+                        if ($count==0) $tab_registers.='class="active-tab" ';
+                        $tab_registers.=">".$piece_fields['nom']."</button> ";
 
-                ?>
+                        if ($count==0) {
+                            $tab_bodies.= '<div style="display:block;">';
+                        } else {
+                            $tab_bodies.= '<div style="display:none;">';
+                        }
+                        $tab_bodies.= "[niveau] => " . $piece_fields['niveau'] ."<br>";
+                        $tab_bodies.= "[surface] => " . $piece_fields['surface'] ."<br>";
+                        $tab_bodies.= "[hauteur_de_plafond] => " . $piece_fields['hauter_de_plafond'] ."<br>";
+                        $tab_bodies.= "[accessible_pmr] => ";
+                        $tab_bodies.= $fields['accessible_pmr'] ? "Oui" : "Non";
+                        $tab_bodies.= "<br>";
+                        $tab_bodies.= "[espaces_manoeuvre] => ";
+                        $tab_bodies.= $fields['espaces_manoeuvre'] ? "Oui" : "Non";
+                        $tab_bodies.= "<br>";
+                        $tab_bodies.= "[type_piece] => " . $piece_fields['type_piece'] ."<br>";
+
+
+                        $tab_bodies.="<h3>Equipements</h3>";
+//                        $tab_bodies.="<pre>".print_r($piece_fields, true)."</pre>";
+                        $equipements = $piece_fields['equipements'];
+                        $tab_bodies.="<div class='row'>";
+                        foreach ($equipements AS $equipement) {
+                            $equipement_fields = get_fields($equipement->ID);
+                            $tab_bodies.="<div class='col-3'>";
+                            $tab_bodies.= $equipement_fields['nom'];
+                            $tab_bodies.="</div>";
+                        }
+                        $tab_bodies.="</div>";
+
+                        $tab_bodies.="<h3>Adaptations</h3>";
+                        $adaptations = $piece_fields['adaptations'];
+                        $tab_bodies.="<div class='row'>";
+                        foreach ($adaptations AS $adaptation) {
+                            $adaptation_fields = get_fields($adaptation->ID);
+                            $tab_bodies.="<div class='col-3'>";
+                            $tab_bodies.= $adaptation_fields['nom'];
+                            $tab_bodies.="</div>";
+                        }
+                        $tab_bodies.="</div>";
+
+                        $tab_bodies.="<h3>Ouvertures</h3>";
+                        $ouvertures = $piece_fields['ouvertures'];
+                        $tab_bodies.="<div class='row'>";
+                        foreach ($ouvertures AS $ouverture) {
+                            $ouverture_fields = get_fields($ouverture->ID);
+                            $tab_bodies.="<div class='col-3'>";
+                            $tab_bodies.= $ouverture_fields['nom'];
+                            $tab_bodies.="</div>";
+
+                        }
+                        $tab_bodies.="</div>";
+
+
+                        $tab_bodies.= '</div>';
+                        $count ++;
+                    }
+
+                    //                echo "<pre>".print_r($adaptations, true)."</pre>";
+
+                    ?>
+
+                    <div class="tab-registers">
+                        <?php echo $tab_registers ?>
+<!--                        <button class="active-tab">Tab 1</button>-->
+<!--                        <button>Tab 2</button>-->
+<!--                        <button>Tab 2</button>-->
+                    </div>
+                    <div class="tab-bodies">
+                        <?php echo $tab_bodies ?>
+<!--                        <div style="display:block;">-->
+<!--                            Contenu Tab 1-->
+<!--                        </div>-->
+<!--                        <div style="display:none;">-->
+<!--                            Contenu Tab 2-->
+<!--                        </div>-->
+<!--                        <div style="display:none;">-->
+<!--                            Contenu Tab 3-->
+<!--                        </div>-->
+                    </div>
+                    <script>
+                        Array.from(document.querySelectorAll('.tabs')).forEach((tab_container, TabID) => {
+                            const registers = tab_container.querySelector('.tab-registers');
+                            const bodies = tab_container.querySelector('.tab-bodies');
+
+                            Array.from(registers.children).forEach((el, i) => {
+                                el.setAttribute('aria-controls', `${TabID}_${i}`)
+                                bodies.children[i]?.setAttribute('id', `${TabID}_${i}`)
+
+                                el.addEventListener('click', (ev) => {
+                                    let activeRegister = registers.querySelector('.active-tab');
+                                    activeRegister.classList.remove('active-tab')
+                                    activeRegister = el;
+                                    activeRegister.classList.add('active-tab')
+                                    changeBody(registers, bodies, activeRegister)
+                                })
+                            })
+                        })
+
+
+                        function changeBody(registers, bodies, activeRegister) {
+                            Array.from(registers.children).forEach((el, i) => {
+                                if (bodies.children[i]) {
+                                    bodies.children[i].style.display = el == activeRegister ? 'block' : 'none'
+                                }
+
+                                el.setAttribute('aria-expanded', el == activeRegister ? 'true' : 'false')
+                            })
+                        }
+                    </script>
+                </div>
+
+
                 <!-- TODO $fields['equipements_daccessibilite'] -->
 
                 <div class="line"> </div>
-                TODO
-                [acceptation] => Instantanée
-                [etage] => Étage intermédiaire
-                [superficie] => 30
-                [accepte_enfant] =>
-                [accepte_bebe] =>
-                [type_reservation] => Logement entier
-                [effets_personnels] =>
-                [nombre_lits_simples] => 1
-                [nombre_lits_doubles] => 2
-                [type_habitation] => Maison
-                [pieces] =>
-                [equipements] =>
-                [adaptations] =>
+                <h2 class="bold"> Information logement </h2>
+
+                [acceptation] => <?php echo $fields['acceptation']?><br>
+                [etage] => <?php echo $fields['etage']?><br>
+                [superficie] => <?php echo $fields['superficie']?><br>
+                [accepte_enfant] => <?php if($fields['accepte_enfant']){echo "Oui";} else {echo "Non";}?><br>
+                [accepte_bebe] => <?php if($fields['accepte_bebe']){echo "Oui";} else {echo "Non";}?><br>
+                [type_reservation] => <?php echo $fields['type_reservation']?><br>
+                [effets_personnels] => <?php if($fields['effets_personnels']){echo "Oui";} else {echo "Non";}?><br>
+                [nombre_lits_simples] => <?php echo $fields['nombre_lits_simples']?><br>
+                [nombre_lits_doubles] => <?php echo $fields['nombre_lits_doubles']?><br>
+                [type_habitation] => <?php echo $fields['type_habitation']?><br>
 
                 <div class="line"> </div>
 
