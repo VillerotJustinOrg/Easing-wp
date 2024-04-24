@@ -1,8 +1,6 @@
 <?php
 require_once 'header.php';
 require_once 'Code_API/UtilsAPI.php';
-require_once 'reservation-treatment.php';
-
 
 $fields=get_fields();
 $post = get_post();
