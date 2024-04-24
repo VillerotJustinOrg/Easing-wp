@@ -24,7 +24,8 @@ $filtered_terms = wp_list_filter($terms, array('count' => 0), 'NOT'); ?>
 
             $logements = get_posts($args);
 
-            foreach ($logements as $logement) {$fields_logement=get_fields($logement->ID) ?>
+            foreach ($logements as $logement) {
+                $fields_logement=get_fields($logement->ID) ?>
                 
                 <pre style="display:none">
                     <?php print_r($fields_logement) ?>
