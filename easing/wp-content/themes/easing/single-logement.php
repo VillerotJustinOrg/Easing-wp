@@ -28,7 +28,7 @@ $json_data = json_encode($data);
 
 // API access token
 $token = get_API_Token();
-$token_access = $token['access_token'];
+if (isset($token['access_token'])) $token_access = $token['access_token'];
 
 // Data disponibility
 // Doesn't work I don't know why
