@@ -51,6 +51,7 @@ function get_API_Token() {
     if ($response === false) {
         $error = curl_error($ch);
         error_log("cURL Error: " . $error);
+        $result_data = "cURL Error: " . $error;
     } else {
         // Decode JSON response
         $result_data = json_decode($response, true);
@@ -59,10 +60,10 @@ function get_API_Token() {
         //error_log("=========================================");
     }
 
-// Close cURL session
+    // Close cURL session
     curl_close($ch);
 
-// Return result data if needed
+    // Return result data if needed
     return $result_data;
 }
 
