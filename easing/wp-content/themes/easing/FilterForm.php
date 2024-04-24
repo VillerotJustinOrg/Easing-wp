@@ -91,6 +91,13 @@
             <p class="croix_filtre" > + </p>
             <h3 style="margin-bottom:50px">Filtres Avancées</h3>
 
+            <h4 style="text-align:center;">
+                <label id="user_request_label" for="user_request">Requête IA</label>
+            </h4>
+            <div class="flex-row d-flex" style="margin-bottom:100px;width:100%;">
+                <textarea id="user_request" style="width:100%;" name="user_request"><?php if (isset($user_request)) echo $user_request; ?></textarea>
+            </div>
+
             <!-- TODO use tab -->
             <div class="dialog-box" style="margin-top: 30px">
 
@@ -219,13 +226,6 @@
             </div>
 
             <!-- END tab -->
-
-            <h4 style="text-align:center;">
-                <label id="user_request_label" for="user_request">Requête IA</label>
-            </h4>
-            <div class="flex-row d-flex" style="margin-bottom:20px;width:100%;">
-                <textarea id="user_request" style="width:100%;" name="user_request"><?php if (isset($user_request)) echo $user_request; ?></textarea>
-            </div>
 
         </div>
     </div>

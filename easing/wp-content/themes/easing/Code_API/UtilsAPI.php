@@ -156,7 +156,7 @@ function update_relationship($source_node_ID, $source_label, $info_targets, $tar
         }
 
 
-        //error_log(print_r($response, true));
+//        error_log(print_r($response, true));
 
         $nodes = json_decode($response['body'], true)['nodes'];
 
