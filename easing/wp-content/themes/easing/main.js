@@ -90,7 +90,7 @@ function initialize() {
       let popupContent = "<a style='width:100%' target=”_blank” href='"+ coordonnees.link +"'>"
                         + "<img src='" + coordonnees.photos[0].url + "' alt='Description de l'image' width='100' height='100'>"
                         + "<div class='text-pop'>" + coordonnees.titre + " - <span class='bold'> " + coordonnees.ville 
-                        + "</span> <br><span class='bold'>" + coordonnees.prix_nuit + " </span> € par nuit </div>"
+                        + "</span> <br><span class='bold'>" + coordonnees.prix_nuitee + " </span> € par nuit </div>"
                         + "</a>";
       marker.bindPopup(popupContent);
       marker.addTo(map);
