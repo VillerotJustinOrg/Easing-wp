@@ -316,9 +316,9 @@ $lien = get_permalink($post->ID);
 
             <div class="pop-reserver">
                 <form action="" method="POST">
-                    <input type="hidden" name="ID_Logement" value="<?php echo $post->post_title; ?>">
-                    <input type="hidden" name="ID_Post" value="<?php echo $post->ID; ?>">
-                    <input type="hidden" name="Node_ID" value="<?php echo $LG_Node_ID; ?>">
+                    <input type="hidden" name="ID_Logement" id="ID_Logement" value="<?php echo $post->post_title; ?>">
+                    <input type="hidden" name="ID_Post" id="ID_Post" value="<?php echo $post->ID; ?>">
+                    <input type="hidden" name="Node_ID" id="Node_ID" value="<?php echo $LG_Node_ID; ?>">
                     <p><span style="font-size:25px" class="bold" > <?php echo $fields['prix_nuitee']; ?></span> € par nuit </p>
                     <div style="margin-top:10px" class="d-flex flex-row justify-content-between">
                         <div class="d-flex flex-column" style="width:48%">
@@ -354,9 +354,94 @@ $lien = get_permalink($post->ID);
                         </select>
                     </div>
 
-                    <button class="button" type="submit">Réserver</button>
-<!--                    <a class="button" href="#"> Réserver </a>-->
+                    <button class="button" type="button" id="book">Réserver</button>
+                    <script>
+                        document.getElementById("book").addEventListener("click", book);
+                        function book() {
+                            console.log("reserver");
+                            let client = document.getElementById('client').value;
+                            console.log("Client nodeID: "+client);
+                            let logement = document.getElementById('Node_ID').value;
+                            console.log("logement nodeID: "+logement);
+                            let nbr_person = document.getElementById('nbr_person').value;
+                            console.log("nbr_person: "+nbr_person);
+                            let start = document.getElementById('debut').value;
+                            console.log("nbr_person: "+start);
+                            let end = document.getElementById('fin').value;
+                            console.log("nbr_person: "+end);
 
+                            // Get token
+                            const token = <?php echo json_encode(get_API_Token(),true) ?>;
+                            console.log("token: "+JSON.stringify(token))
+
+                            // Create relationship between two node
+
+                            // Assuming you have the bearer token stored in a variable called 'accessToken'
+                            const accessToken = token.access_token;
+
+                            // Data to be sent in the request body
+                            const requestData = {
+                                "relationship_type": "Rented_by",
+                                "relationship_attributes":{
+                                    "start":start,
+                                    "end":end,
+                                },
+                                "source_node": {
+                                    "id": logement,
+                                    "label": "logement"
+                                } ,
+                                "target_node": {
+                                    "id": client,
+                                    "label": "client"
+                                }
+                            };
+
+                            // Convert the data to JSON format
+                            const jsonData = JSON.stringify(requestData);
+
+                            // URL for the request
+                            const url = 'http://localhost:8000/graph/create_relationship';
+
+                            // Creating a new XMLHttpRequest object
+                            const xhr = new XMLHttpRequest();
+
+                            // Specify the request method and URL
+                            xhr.open('POST', url, true);
+
+                            // Set the request headers
+                            xhr.setRequestHeader('Content-Type', 'application/json');
+                            xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+
+                            // Define the callback function when the response is received
+                            xhr.onload = function() {
+                                if (xhr.status >= 200 && xhr.status < 300) {
+                                    // Request was successful
+                                    const responseData = JSON.parse(xhr.responseText);
+                                    console.log(responseData);
+
+                                    //TODO add alert
+
+                                } else {
+                                    // Request failed
+                                    console.error('Request failed with status', xhr.status);
+
+                                    //TODO add alert
+                                }
+                            };
+
+                            // Define the callback function for error handling
+                            xhr.onerror = function() {
+                                console.error('Request failed');
+
+                                //TODO add alert
+                            };
+
+                            // Send the request with the JSON data
+                            xhr.send(jsonData);
+
+                        }
+
+                    </script>
                     <p> <?php echo $fields['prix_nuitee']; ?>€ x <span id="nombreNuit"> 5 </span> nuits </p>
 
                     <p style="margin-top:30px;margin-top:10px;font-size:20px" class="bold" id="prix" data-prix="<?php echo $fields['prix_nuitee']; ?>"> Prix : <?php echo  $fields['prix_nuitee'] ?> € </p>
