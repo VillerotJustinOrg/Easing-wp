@@ -419,13 +419,13 @@ $lien = get_permalink($post->ID);
                                     const responseData = JSON.parse(xhr.responseText);
                                     console.log(responseData);
 
-                                    //TODO add alert
+                                    alert("Réservation enregistée")
 
                                 } else {
                                     // Request failed
                                     console.error('Request failed with status', xhr.status);
 
-                                    //TODO add alert
+                                    alert("Erreur dans le réservation")
                                 }
                             };
 
@@ -433,7 +433,7 @@ $lien = get_permalink($post->ID);
                             xhr.onerror = function() {
                                 console.error('Request failed');
 
-                                //TODO add alert
+                                alert("Erreur dans le réservation")
                             };
 
                             // Send the request with the JSON data
