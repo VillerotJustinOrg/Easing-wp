@@ -69,15 +69,15 @@ error_log("Locations: ".print_r($locations, true));
 $events = [];
 foreach ($locations as $location){
     // Create a DateTime object from the date string
-    $date = new DateTime($location['start']);
+    $date = new DateTime($location['end']);
 
     // Subtract one day
-//    $date->modify("-1 day");
+    $date->modify("+1 day");
 
     // Format the date as a string
     $previousDay = $date->format("Y-m-d");
 
-    $string_builder= "{id: '".$location['id']."', start: '".$previousDay."', end: '".$location['end']."', backgroundColor: '#ff0000', title: 'Réserver'}";
+    $string_builder= "{id: '".$location['id']."', start: '".$location['start']."', end: '".$previousDay."', backgroundColor: '#ff0000', title: 'Réserver'}";
     $events[] = $string_builder;
 }
 
