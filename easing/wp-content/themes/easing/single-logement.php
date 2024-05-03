@@ -85,7 +85,10 @@ error_log("List: ".print_r($events, true));
 
 // Visit URL
 $visite = $fields['3D_Visit'];
-$visite_URL = $visite['ID'].'/'.$visite['title'];
+if (!empty($visite)){
+    $visite_URL = $visite['ID'].'/'.$visite['title'];
+}
+
 
 // Get Client List
 $cypher_string = "MATCH (n:client) RETURN n,  ID(n) as ID;";
@@ -136,9 +139,13 @@ $lien = get_permalink($post->ID);
                     <div style="background-size:cover;background-position:center center;background-image: url(<?php echo $photo['url'] ?>);" class="case-<?php echo $i ?>"></div>
                 <?php } ?>
 
-                <?php if($i==3){ ?> 
+                <?php if($i==3 and isset($visite_URL)){ ?>
                     <a target=”_blank” href="<?php echo get_bloginfo('template_url'); ?>/3D_Visits/<?php echo $visite_URL ?>/Maison.html" style="position:relative;background-size:cover;background-position:center center;background-image: url(<?php echo $photo['url'] ?>);" class="case-<?php echo $i ?>">
                         <img alt="IMG-360" class="img-360" src="<?php echo get_bloginfo('template_url'); ?>/img/360.svg" >
+                    </a>
+                <?php } elseif ($i==3) { ?>
+                    <a target="" href="" style="color:white;position:relative;background-size:cover;background-position:center center;background-image: url(<?php echo $photo['url'] ?>);" class="case-<?php echo $i ?>">
+                        Pas de visite 3D disponible
                     </a>
                 <?php } ?>
 
@@ -197,7 +204,9 @@ $lien = get_permalink($post->ID);
 
                     <?php
                     $pieces = $fields['pieces'];
-
+                    if (empty($pieces)) {
+                        echo "Pas de pièces";
+                    }
                     $tab_registers = "";
                     $tab_bodies = "";
                     $count = 0;
@@ -328,18 +337,55 @@ $lien = get_permalink($post->ID);
                 <div class="line"> </div>
                 <h2 class="bold"> Information logement </h2>
 
-                [acceptation] => <?php echo $fields['acceptation']?><br>
-                [etage] => <?php echo $fields['etage']?><br>
-                [superficie] => <?php echo $fields['superficie']?><br>
-                [accepte_enfant] => <?php if($fields['accepte_enfant']){echo "Oui";} else {echo "Non";}?><br>
-                [accepte_bebe] => <?php if($fields['accepte_bebe']){echo "Oui";} else {echo "Non";}?><br>
-                [type_reservation] => <?php echo $fields['type_reservation']?><br>
-                [effets_personnels] => <?php if($fields['effets_personnels']){echo "Oui";} else {echo "Non";}?><br>
-                [nombre_lits_simples] => <?php echo $fields['nombre_lits_simples']?><br>
-                [nombre_lits_doubles] => <?php echo $fields['nombre_lits_doubles']?><br>
-                [type_habitation] => <?php echo $fields['type_habitation']?><br>
+                Acceptation : <?php echo $fields['acceptation']?><br>
+                Étage : <?php echo $fields['etage']?><br>
+                Superficie : <?php echo $fields['superficie']?><br>
+                Accepte enfant : <?php if($fields['accepte_enfant']){echo "Oui";} else {echo "Non";}?><br>
+                Accepte bebe : <?php if($fields['accepte_bebe']){echo "Oui";} else {echo "Non";}?><br>
+                Type de reservation : <?php echo $fields['type_reservation']?><br>
+                Effets personnels : <?php if($fields['effets_personnels']){echo "Oui";} else {echo "Non";}?><br>
+                Nombre lits_simples : <?php echo $fields['nombre_lits_simples']?><br>
+                Nombre lits_doubles : <?php echo $fields['nombre_lits_doubles']?><br>
+                Type d'habitation : <?php echo $fields['type_habitation']?><br>
 
                 <div class="line"> </div>
+                <h2 class="bold"> Equipements </h2>
+
+                <?php
+                    $equipements = $fields['equipements'];
+
+                    if (empty($equipements)){
+                        echo "Pas d'équipements";
+                    }
+
+                    foreach ($equipements as $equipement){
+                        $equipement_fields = get_fields($equipement->ID);
+
+                        echo "<li>".$equipement_fields['nom']."</li>";
+                    }
+
+                    ?>
+
+                <div class="line"> </div>
+                <h2 class="bold"> Adaptations </h2>
+
+                <?php
+                $adaptations = $fields['adaptations'];
+
+                if (empty($adaptations)){
+                    echo "Pas d'adaptations";
+                }
+
+                echo "<ul>";
+                foreach ($adaptations as $adaptation){
+                    $adaptation_fields = get_fields($adaptation->ID);
+
+                    echo "<li>".$adaptation_fields['nom']."</li>";
+                }
+                echo "</ul>";
+
+
+                ?>
 
             </div>
 
@@ -487,7 +533,19 @@ $lien = get_permalink($post->ID);
 
         <div class="grand_line"> </div>
         <h3 class="bold"> Propriétaire </h3>
-        [proprietaire] => TODO
+        <?php
+        $proprios = $fields['proprietaire'];
+
+        if (empty($proprios)){
+            echo "Pas de propriétaire";
+        }
+
+        foreach ($proprios as $proprio){
+            $proprio_fields = get_fields($proprio->ID);
+            echo "Nom : ".$proprio_fields['nom']."<br>";
+            echo "Prénom : ".$proprio_fields['prenom']."<br>";
+        }
+        ?>
     </div>
 </main>
 
