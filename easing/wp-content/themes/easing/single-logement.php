@@ -72,7 +72,7 @@ foreach ($locations as $location){
     $date = new DateTime($location['start']);
 
     // Subtract one day
-    $date->modify("-1 day");
+//    $date->modify("-1 day");
 
     // Format the date as a string
     $previousDay = $date->format("Y-m-d");
