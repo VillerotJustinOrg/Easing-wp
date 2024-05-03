@@ -30,9 +30,10 @@ $json_data = json_encode($data);
 $token = get_API_Token();
 if (isset($token['access_token'])) $token_access = $token['access_token'];
 
+$API_URL = getenv('API_URL');
 // Data disponibility
 // Doesn't work I don't know why
-$URL = getenv('API_URL')."/q";
+$URL = $API_URL."/q";
 //
 $query = "MATCH (l:logement)-[r:is_located_by]-() ";
 $query.= "WHERE l.ID_Logement = \"$Logement_ID\" ";
@@ -428,7 +429,7 @@ $lien = get_permalink($post->ID);
                             const jsonData = JSON.stringify(requestData);
 
                             // URL for the request
-                            const url = 'http://localhost:8000/graph/create_relationship';
+                            const url = '<?php echo $API_URL?>/graph/create_relationship';
 
                             // Creating a new XMLHttpRequest object
                             const xhr = new XMLHttpRequest();
