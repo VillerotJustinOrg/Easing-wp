@@ -36,7 +36,7 @@ $URL = getenv('API_URL')."/q";
 //
 $query = "MATCH (l:logement)-[r:is_located_by]-() ";
 $query.= "WHERE l.ID_Logement = \"$Logement_ID\" ";
-$query.= "RETURN r;";
+$query.= "RETURN id(r) as id, r.start as start, r.end as end;";
 //
 ////$query = "MATCH (l:logement)-[r:is_located_by]-() WHERE l.ID_Logement = \"Logement 1\" RETURN r;";
 //
@@ -57,10 +57,30 @@ $args = array(
 );
 
 $response = wp_remote_post($URL, $args);
-//$response = request($body, $header, $URL, 'POST');
 
-error_log("Response: ".print_r($response, true));
+//error_log("Response: ".print_r($response, true));
 //error_log("thingy: ".print_r($response['response'][0]['r'][1], true));
+
+$locations = json_decode($response["body"], true)['response'];
+
+error_log("Locations: ".print_r($locations, true));
+
+$events = [];
+foreach ($locations as $location){
+    // Create a DateTime object from the date string
+    $date = new DateTime($location['start']);
+
+    // Subtract one day
+    $date->modify("-1 day");
+
+    // Format the date as a string
+    $previousDay = $date->format("Y-m-d");
+
+    $string_builder= "{id: '".$location['id']."', start: '".$previousDay."', end: '".$location['end']."', backgroundColor: '#ff0000', title: 'Réserver'}";
+    $events[] = $string_builder;
+}
+
+error_log("List: ".print_r($events, true));
 
 // Visit URL
 $visite = $fields['3D_Visit'];
@@ -80,7 +100,7 @@ $args = array(
 
 $response = wp_remote_post($URL, $args);
 $clients = json_decode($response['body'], true);
-error_log("Response: ".print_r($clients, true));
+//error_log("Response: ".print_r($clients, true));
 
 $client_list = [];
 foreach ($clients["response"] as $client){
@@ -144,9 +164,17 @@ $lien = get_permalink($post->ID);
 
                 <script>
 
+                    let list_event=[]
+
+                    <?php foreach ($events as $event) {
+                        echo "list_event.push(".$event.");";
+                    }?>
+
+                    console.log(list_event)
                     document.addEventListener('DOMContentLoaded', function() {
                         var calendarEl = document.getElementById('calendar');
                         var calendar = new FullCalendar.Calendar(calendarEl, {
+                            events:list_event,
                             initialView: 'dayGridMonth'
                         });
                         calendar.render();
@@ -381,7 +409,7 @@ $lien = get_permalink($post->ID);
 
                             // Data to be sent in the request body
                             const requestData = {
-                                "relationship_type": "Rented_by",
+                                "relationship_type": "is_located_by",
                                 "relationship_attributes":{
                                     "start":start,
                                     "end":end,
